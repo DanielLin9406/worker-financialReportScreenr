@@ -8,10 +8,11 @@ load_dotenv()
 
 def getStockPrice(company):
     quandl.ApiConfig.api_key = os.getenv("QUANDL_API_KEY")
-    return quandl.get_table('SHARADAR/SEP', ticker=company)
+    a = quandl.get_table('SHARADAR/SEP', ticker=company)
+    return a
 
 
-def clearSpaceinTable(financialDFCombined):
+def formatedTable(financialDFCombined):
     filterLeftSpaceDL = financialDFCombined.rename(index=lambda x: x.lstrip())
     transToFloatDL = filterLeftSpaceDL.apply(
         lambda x: x.iloc[0:].str.replace(',', '').astype(np.float))
@@ -25,7 +26,7 @@ def concatTable(financialDFDict):
     return pd.concat([balanceDF, cashDF, incomeDF])
 
 
-def filterEmptyDataFrame(data):
+def filterEmptyDataSource(data):
     List = data["List"]
     if len(List) == 0:
         return

@@ -1,18 +1,25 @@
-from worker import filterEmptyDataFrame, readReport, concatTable, clearSpaceinTable, getStockPrice
-from valueInvestment import createValueInvestment
+from worker import filterEmptyDataSource, readReport, concatTable, formatedTable, getStockPrice
+from createParasTable import createParasTable
+from analyzeData import analyzeData
 import pathlib as plib
 import os
 
 
+def cleanDataWorker(dir):
+    rawDFDict = readReport(dir)
+    DFDict = filterEmptyDataSource(rawDFDict)
+    CombinedDF = concatTable(DFDict)
+    return formatedTable(CombinedDF)
+
+
 def mainProcess(dir, company):
-    data = readReport(dir)
-    financialDFDict = filterEmptyDataFrame(data)
-    financialDFCombined = concatTable(financialDFDict)
-    financialDFCombinedFormated = clearSpaceinTable(financialDFCombined)
+    formatedCombinedDF = cleanDataWorker(dir)
     priceDF = getStockPrice(company)
-    valueInvestmentTable = createValueInvestment(
-        financialDFCombinedFormated, priceDF, company)
-    print(valueInvestmentTable)
+
+    parasTable = createParasTable(
+        formatedCombinedDF, priceDF, company)
+
+    analyzeData(parasTable)
 
 
 def main(path):
