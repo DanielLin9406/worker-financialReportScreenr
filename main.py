@@ -1,5 +1,6 @@
-from worker import filterEmptyDataSource, readReport, concatTable, formatedTable, getStockPrice
+from worker import filterEmptyDataSource, readReport, concatTable, formatedTable, getStockPrice, getTreasuriesYield
 from createParasTable import createParasTable
+from createPriceTable import createPriceTable
 from analyzeData import analyzeData
 import pathlib as plib
 import os
@@ -15,11 +16,13 @@ def cleanDataWorker(dir):
 def mainProcess(dir, company):
     formatedCombinedDF = cleanDataWorker(dir)
     priceDF = getStockPrice(company)
+    treasuriesYieldDF = getTreasuriesYield()
 
     parasTable = createParasTable(
-        formatedCombinedDF, priceDF, company)
-
-    analyzeData(parasTable)
+        formatedCombinedDF, [priceDF], company)
+    priceTable = createPriceTable(
+        formatedCombinedDF, [priceDF, treasuriesYieldDF], company)
+    # analyzeData(parasTable)
 
 
 def main(path):

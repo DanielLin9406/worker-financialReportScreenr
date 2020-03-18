@@ -1,13 +1,15 @@
 import pandas as pd
 import numpy as np
-from dataClass.SuperClass import Super
+import config
+from dataClass.SuperData import Super
 
 
 class Dividend(Super):
     def __init__(self, *args):
         Super.__init__(self, *args)
+        self.colName = config.ShareHolderName
         self.combinedDF = args[0]
-        self.priceDF = args[1]
+        self.priceDF = args[1][0]
         self.company = args[2]
 
     def getAvgDividendin5years(self):
@@ -48,43 +50,48 @@ class Dividend(Super):
 
     def setPayoutRatio(self):
         output = self.getPayoutRatio()
-        self.setOutput(9, "Payout ratio", output, self.latestYear)
+        self.setOutput(9, self.colName["payoutRatio"], output, self.latestYear)
 
     def setDividendYield(self):
         output = self.getDividendYield()
-        self.setOutput(8, "Divided Yield", output, self.latestYear)
+        self.setOutput(
+            8, self.colName["dividendYield"], output, self.latestYear)
 
     def setDividendGrowthin5Years(self):
         output = self.getDividendGrowthin5Years()
-        self.setOutput(7, "5-year Average Divided Growth",
+        self.setOutput(7, self.colName["fiveYearAverageDividendGrowth"],
                        output, self.latestYear)
 
     def setDividendGrowthin3Years(self):
         output = self.getDividendGrowthin3Years()
-        self.setOutput(6, "3-year Average Divided Growth",
+        self.setOutput(6, self.colName["threeYearAverageDividendGrowth"],
                        output, self.latestYear)
 
     def setIsDividendGrowthin3Years(self):
         output = self.isDividendGrowthin3Years()
-        self.setOutput(5, "Is Divided Growth in 3 year",
+        self.setOutput(5, self.colName["dividendGrowthinThreeYear"],
                        output, self.latestYear)
 
     def setMinDividendin5Years(self):
         output = self.getMinDividendin5Years()
-        self.setOutput(4, "Min Divided in 5-years", output, self.latestYear)
+        self.setOutput(
+            4, self.colName["minDividendinFiveYears"], output, self.latestYear)
 
     def setMaxDividendin5Years(self):
         output = self.getMaxDividendin5Years()
-        self.setOutput(3, "Max Divided in 5-years", output, self.latestYear)
+        self.setOutput(
+            3, self.colName["maxDividendinFiveYears"], output, self.latestYear)
 
     def setAvgDividendin5years(self):
         output = self.getAvgDividendin5years()
-        self.setOutput(2, "5-years Average Divided", output, self.latestYear)
+        self.setOutput(
+            2, self.colName["fiveYearAverageDividend"], output, self.latestYear)
 
     def setTotalDivideds(self):
         output = self.getTotalDividend()
-        self.setOutput(1, "Total Divideds", output, self.latestYear)
+        self.setOutput(
+            1, self.colName["totalDividend"], output, self.latestYear)
 
     def setDividend(self):
         output = self.getDividend()
-        self.setOutput(0, "Divided", output, self.latestYear)
+        self.setOutput(0, self.colName["dividend"], output, self.latestYear)

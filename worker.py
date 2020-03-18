@@ -5,11 +5,15 @@ import numpy as np
 from dotenv import load_dotenv
 load_dotenv()
 
+quandl.ApiConfig.api_key = os.getenv("QUANDL_API_KEY")
+
 
 def getStockPrice(company):
-    quandl.ApiConfig.api_key = os.getenv("QUANDL_API_KEY")
-    a = quandl.get_table('SHARADAR/SEP', ticker=company)
-    return a
+    return quandl.get_table('SHARADAR/SEP', ticker=company)
+
+
+def getTreasuriesYield():
+    return quandl.get("USTREASURY/REALYIELD").sort_index(ascending=False).iloc[0]
 
 
 def formatedTable(financialDFCombined):

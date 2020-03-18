@@ -1,12 +1,12 @@
 import pandas as pd
-from dataClass.DividendClass import Dividend
-from dataClass.ProfitClass import Profit
-from dataClass.GrowthClass import Growth
-from dataClass.SafetyClass import Safety
+from dataClass.DividendData import Dividend
+from dataClass.ProfitData import Profit
+from dataClass.GrowthData import Growth
+from dataClass.SafetyData import Safety
 
 
-def createDividendDF(combinedDF, priceDF, company):
-    dividendInstance = Dividend(combinedDF, priceDF, company)
+def createDividendDF(combinedDF, priceDFList, company):
+    dividendInstance = Dividend(combinedDF, priceDFList, company)
     dividendInstance.setDividend()
     dividendInstance.setTotalDivideds()
     dividendInstance.setAvgDividendin5years()
@@ -20,8 +20,8 @@ def createDividendDF(combinedDF, priceDF, company):
     return dividendInstance.getOutput()
 
 
-def createProfitDF(combinedDF, priceDF, company):
-    profitInstance = Profit(combinedDF, priceDF, company)
+def createProfitDF(combinedDF, priceDFList, company):
+    profitInstance = Profit(combinedDF, priceDFList, company)
     profitInstance.setROE()
     profitInstance.setAvgROEin5years()
     profitInstance.setMaxROEin5Years()
@@ -34,18 +34,19 @@ def createProfitDF(combinedDF, priceDF, company):
     return profitInstance.getOutput()
 
 
-def createGrowthDF(combinedDF, priceDF, company):
-    growthInstance = Growth(combinedDF, priceDF, company)
+def createGrowthDF(combinedDF, priceDFList, company):
+    growthInstance = Growth(combinedDF, priceDFList, company)
     growthInstance.setROTA()
     growthInstance.setGrossMargin()
     growthInstance.setAssetTurnoverRatio()
     growthInstance.setReinvestmentRate()
-    growthInstance.setOperatingIncome()
+    growthInstance.setOperatingIncomeGrowth()
+    growthInstance.setRevenueGrowth()
     return growthInstance.getOutput()
 
 
-def createSafetyDF(combinedDF, priceDF, company):
-    safetyInstance = Safety(combinedDF, priceDF, company)
+def createSafetyDF(combinedDF, priceDFList, company):
+    safetyInstance = Safety(combinedDF, priceDFList, company)
     safetyInstance.setDebtEquityRatio()
     safetyInstance.setCurrentRatio()
     safetyInstance.setQuickRatio()
@@ -56,9 +57,9 @@ def createSafetyDF(combinedDF, priceDF, company):
     return safetyInstance.getOutput()
 
 
-def createParasTable(combinedDF, priceDF, company):
+def createParasTable(combinedDF, priceDFList, company):
     return pd.concat([
-        createDividendDF(combinedDF, priceDF, company),
-        createProfitDF(combinedDF, priceDF, company),
-        createGrowthDF(combinedDF, priceDF, company),
-        createSafetyDF(combinedDF, priceDF, company)], axis=1)
+        createDividendDF(combinedDF, priceDFList, company),
+        createProfitDF(combinedDF, priceDFList, company),
+        createGrowthDF(combinedDF, priceDFList, company),
+        createSafetyDF(combinedDF, priceDFList, company)], axis=1)

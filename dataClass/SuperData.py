@@ -17,6 +17,9 @@ class Super:
     def getTotalAssets(self):
         return self.combinedDF.loc["Total Assets"]
 
+    def getTotalLiabilities(self):
+        return self.combinedDF.loc["Total Liabilities"]
+
     def getRevenue(self):
         return self.combinedDF.loc["Total Revenue"]
 
@@ -41,6 +44,9 @@ class Super:
     def getPrice(self):
         return self.priceDF.loc[0, "close"]
 
+    def getPretaxIncome(self):
+        return self.combinedDF.loc['Pretax Income']
+
     def getShares(self):
         return self.combinedDF.loc['Common Shares Issued']
 
@@ -53,6 +59,12 @@ class Super:
     def getTotalDividend(self):
         return -self.combinedDF.loc['Cash Dividends Paid']
 
+    def getOperatingExpenses(self):
+        return -self.combinedDF.loc["Operating Income/Expenses"]
+
+    def getChangeInWorkingCapital(self):
+        return np.divide(self.getCurrentLiabilities(), self.getCurrentAssets())
+
     def getDividend(self):
         return np.divide(self.getTotalDividend(), self.getShares()).dropna().sort_index(ascending=False)
 
@@ -61,6 +73,28 @@ class Super:
 
     def getFreeCashFlow(self):
         return self.getOperatingCashFlow() - self.getCapitalExpenditures()
+
+    def getEPS(self):
+        return np.divide(self.getNetIncome(), self.getShares())
+
+    def getEBIT(self):
+        return self.getRevenue()-self.getFreeCashFlow()-self.getOperatingExpenses()
+
+    def getOperatingIncomeGrowth(self):
+        latestYear = self.getOperatingIncome().get(self.latestYear)
+        lastYear = self.getOperatingIncome().get(self.lastYear)
+        twoYearsAgo = self.getOperatingIncome().get(self.twoYearsAgo)
+        threeYearsAgo = self.getOperatingIncome().get(self.threeYearsAgo)
+        output1 = np.divide((latestYear-lastYear), lastYear)
+        output2 = np.divide((lastYear-twoYearsAgo), twoYearsAgo)
+        output3 = np.divide((twoYearsAgo-threeYearsAgo), threeYearsAgo)
+        return pd.Series([output1, output2, output3], index=[self.latestYear, self.lastYear, self.twoYearsAgo])
+
+    def getEPSGrowth(self):
+        latestYear = self.getEPS().get(self.latestYear)
+        lastYear = self.getEPS().get(self.lastYear)
+        output = np.divide((latestYear-lastYear), lastYear)
+        return pd.Series([output], index=[self.latestYear])
 
     def setOutput(self, columnIndex, columnHead, column, year):
         self.output = self.output.rename(columns={columnIndex: columnHead})
