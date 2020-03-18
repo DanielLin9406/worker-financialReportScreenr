@@ -3,6 +3,7 @@ from createParasTable import createParasTable
 from createPriceTable import createPriceTable
 from analyzeData import analyzeData
 import pathlib as plib
+import pandas as pd
 import os
 
 
@@ -22,7 +23,8 @@ def mainProcess(dir, company):
         formatedCombinedDF, [priceDF], company)
     priceTable = createPriceTable(
         formatedCombinedDF, [priceDF, treasuriesYieldDF], company)
-    # analyzeData(parasTable)
+    analyzedTable = analyzeData(parasTable, company)
+    print(pd.concat([parasTable, priceTable, analyzedTable], axis=1))
 
 
 def main(path):

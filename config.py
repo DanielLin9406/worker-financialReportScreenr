@@ -24,7 +24,7 @@ ProfitName = dict(
     maxROEinFiveyears="Max ROE in 5 years",
     minROEinFiveyears="Min ROE in 5 years",
     ROA="ROA",
-    grossMargin="Gross Margin",
+    # grossMargin="Gross Margin",
     operatingMargin="Operating Margin",
     operatingCashFlow="Operating Cash Flow",
     netIncome="Net Income",
@@ -111,116 +111,247 @@ FCFE = dict(
 
 marginOfSafety = 0.8
 
-checkValueInvestment = dict(
+criteria = dict(
     ShareHolder=[
-        [{"name": thisModule.ShareHolderName["dividendYield"],
-          "criteria": "2%", "operator":"gt"}],
-        [{"name": thisModule.ShareHolderName["payoutRatio"],
-          "criteria": "80%", "operator":"gt"}],
-        [{"name": thisModule.ShareHolderName["dividendGrowthinThreeYear"],
-          "criteria": True, "operator":"eq"}],
-        [{"name": thisModule.ShareHolderName["fiveYearAverageDividendGrowth"],
-          "criteria": 1, "operator":"gt"}],
-        [{"name": thisModule.ShareHolderName["fiveYearAverageDividendGrowth"], "criteriaName": thisModule.ShareHolderName["maxDividendinFiveYears"], "operator":"lt25%"},
-         {"name": thisModule.ShareHolderName["minDividendinFiveYears"], "criteriaName": thisModule.ShareHolderName["fiveYearAverageDividendGrowth"], "operator":"lt25%"}]
-    ],
-    FScore=[
-        [{"name": thisModule.ProfitName["ROA"],
-          "criteria": 0, "operator":"gt"}],
-        [{"name": thisModule.ProfitName["operatingCashFlow"],
-          "criteria": 0, "operator":"gt"}],
-        [{"name": thisModule.ProfitName["operatingCashFlow"],
-          "criteriaName": thisModule.ProfitName["netIncome"], "operator":"gt"}],
-        [{"name": thisModule.GrowthName["ROTA"],
-          "criteriaName": thisModule.GrowthName["ROTAn1"], "operator":"gt"}],
-        [{"name": thisModule.GrowthName["assetTurnoverRatio"],
-          "criteriaName": thisModule.GrowthName["assetTurnoverRation1"], "operator":"gt"}],
-        [{"name": thisModule.GrowthName["grossMargin"],
-          "criteriaName": thisModule.GrowthName["grossMarginn1"], "operator":"gt"}],
-        [{"name": thisModule.SafetyName["longTermDebt"],
-          "criteriaName": thisModule.SafetyName["longTermDebtn1"], "operator":"lt"}],
-        [{"name": thisModule.SafetyName["shareCapital"],
-          "criteriaName": thisModule.SafetyName["shareCapitaln1"], "operator":"lt"}],
-        [{"name": thisModule.SafetyName["currentRatio"],
-          "criteriaName": thisModule.SafetyName["currentRation1"], "operator":"gt"}],
+        {
+            "name": "dividendYield>2%",
+            "mode": "valueInvestment",
+            "data": [{"name": thisModule.ShareHolderName["dividendYield"],
+                      "criteria": 0.02, "operator":["gt"]}]
+        }, {
+            "name": "payoutRatio>80%",
+            "mode": "valueInvestment",
+            "data": [{"name": thisModule.ShareHolderName["payoutRatio"],
+                      "criteria": 0.8, "operator":["gt"]}],
+        }, {
+            "name": "payoutRatio<80%",
+            "mode": "growthInvestment",
+            "data":  [{"name": thisModule.ShareHolderName["payoutRatio"],
+                       "criteria": 0.8, "operator":["lt", "eq"]}],
+        }, {
+            "name": "dividendGrowthinThreeYear=True%",
+            "mode": "valueInvestment",
+            "data": [{"name": thisModule.ShareHolderName["dividendGrowthinThreeYear"],
+                      "criteria": True, "operator":["eq"]}],
+        }, {
+            "name": "fiveYearAverageDividendGrowth>1",
+            "mode": "valueInvestment",
+            "data": [{"name": thisModule.ShareHolderName["fiveYearAverageDividendGrowth"],
+                      "criteria": 1, "operator":["gt"]}],
+        }, {
+            "name": "dividend stability",
+            "mode": "valueInvestment",
+            "data": [{"name": thisModule.ShareHolderName["fiveYearAverageDividendGrowth"], "name2": thisModule.ShareHolderName["maxDividendinFiveYears"], "operator":["lt"], "criteria":0.25},
+                     {"name": thisModule.ShareHolderName["minDividendinFiveYears"], "name2": thisModule.ShareHolderName["fiveYearAverageDividendGrowth"], "operator":["lt"], "criteria":0.25}]
+        }
+    ], FScore=[
+        {
+            "name": "ROA>0",
+            "mode": "valueInvestment",
+            "data": [{"name": thisModule.ProfitName["ROA"],
+                      "criteria": 0, "operator":["gt"]}],
+        },
+        {
+            "name": "OCF>0",
+            "mode": "valueInvestment",
+            "data": [{"name": thisModule.ProfitName["operatingCashFlow"],
+                      "criteria": 0, "operator":["gt"]}],
+        },
+        {
+            "name": "OCF>Net Income",
+            "mode": "valueInvestment",
+            "data": [{"name": thisModule.ProfitName["operatingCashFlow"],
+                      "name2": thisModule.ProfitName["netIncome"], "criteria":1, "operator":["gt"]}],
+        },
+        {
+            "name": "ROTA(N) > ROTA(N-1)",
+            "mode": "valueInvestment",
+            "data": [{"name": thisModule.GrowthName["ROTA"],
+                      "name2": thisModule.GrowthName["ROTAn1"], "criteria":1, "operator":["gt"]}],
+        },
+        {
+            "name": "Asset Turnover Ratio(N) >Asset Turnover Ratio(N-1)",
+            "mode": "valueInvestment",
+            "data": [{"name": thisModule.GrowthName["assetTurnoverRatio"],
+                      "name2": thisModule.GrowthName["assetTurnoverRation1"], "criteria":1, "operator":["gt"]}],
+        },
+        {
+            "name": "Gross Margin(N) > Gross Margin(N-1)",
+            "mode": "valueInvestment",
+            "data": [{"name": thisModule.GrowthName["grossMargin"],
+                      "name2": thisModule.GrowthName["grossMarginn1"], "criteria":1, "operator":["gt"]}],
+        },
+        {
+            "name": "Long-Term Debt(N)<Long-Term Debt(N-1)",
+            "mode": "valueInvestment",
+            "data": [{"name": thisModule.SafetyName["longTermDebt"],
+                      "name2": thisModule.SafetyName["longTermDebtn1"], "criteria":1, "operator":["lt"]}],
+
+        },
+        {
+            "name": "Shares(N)<Shares(N-1)",
+            "mode": "valueInvestment",
+            "data": [{"name": thisModule.SafetyName["shareCapital"],
+                      "name2": thisModule.SafetyName["shareCapitaln1"], "criteria":1, "operator":["lt"]}],
+        },
+        {
+            "name": "Current Ratio(N) > Current Ratio(N-1)",
+            "mode": "valueInvestment",
+            "data": [{"name": thisModule.SafetyName["currentRatio"],
+                      "name2": thisModule.SafetyName["currentRation1"], "criteria":1, "operator":["gt"]}],
+        }
     ],
     Profit=[
-        [{"name": thisModule.ProfitName["ROA"], "criteria": "15%", "operator":"gt"}],
-        [{"name": thisModule.ProfitName["ROA"],
-            "criteriaName": thisModule.ProfitName["ROE"], "operator":"gt80%"}],
-        [{"name": thisModule.ProfitName["ROE"], "criteria": "15%", "operator":"gt"},
-         {"name": thisModule.ProfitName["ROEn1"],
-             "criteria": "15%", "operator":"gt"},
-         {"name": thisModule.ProfitName["ROEn2"],
-             "criteria": "15%", "operator":"gt"},
-         {"name": thisModule.ProfitName["ROEn3"],
-             "criteria": "15%", "operator":"gt"},
-         {"name": thisModule.ProfitName["ROEn4"],
-             "criteria": "15%", "operator":"gt"}],
-        [{"name": thisModule.ProfitName["grossMargin"],
-          "criteria": "15%", "operator":"gt"}],
-        [{"name": thisModule.ProfitName["operatingMargin"],
-          "criteria": "10%", "operator":"gt"}],
-        [{"name": thisModule.ProfitName["maxROEinFiveyears"],
-          "criteriaName": thisModule.ProfitName["minROEinFiveyears"], "operator":"lt400%"}],
-        [{"name": thisModule.ProfitName["freeCashFlow"], "criteria": 0, "operator":"gt"},
-         {"name": thisModule.ProfitName["freeCashFlow"], "criteriaName":thisModule.ShareHolderName['totalDividend'], "operator":"gt"}],
-        [{"name": thisModule.ProfitName["freeCashFlow"],
-            "criteriaName":thisModule.ProfitName['operatingCashFlow'], "operator":"gt80%"}]
+        {
+            "name": "ROE > 15%",
+            "mode": "valueInvestment",
+            "data": [{"name": thisModule.ProfitName["ROA"], "criteria": 0.15, "operator":["gt"]}],
+        },
+        {
+            "name": "ROE(N) = Max(ROE)",
+            "mode": "growthInvestment",
+            "data": [{"name": thisModule.ProfitName["ROE"],
+                      "name2": thisModule.ProfitName["maxROEinFiveyears"], "criteria":1, "operator":["eq"]}],
+        },
+        {
+            "name": "ROA/ROE>80%",
+            "mode": "both",
+            "data": [{"name": thisModule.ProfitName["ROA"],
+                      "name2": thisModule.ProfitName["ROE"], "criteria":0.8, "operator":["gt"]}],
+        },
+        {
+            "name": "ROA>0%",
+            "mode": "growthInvestment",
+            "data": [{"name": thisModule.ProfitName["ROA"], "criteria": 0, "operator":["gt"]}],
+        },
+        {
+            "name": "ROE>15%in 5 years",
+            "mode": "growthInvestment",
+            "data": [{"name": thisModule.ProfitName["ROE"], "criteria": 0.15, "operator":["gt"]},
+                     {"name": thisModule.ProfitName["ROEn1"],
+                      "criteria": 0.15, "operator":["gt"]},
+                     {"name": thisModule.ProfitName["ROEn2"],
+                      "criteria": 0.15, "operator":["gt"]},
+                     {"name": thisModule.ProfitName["ROEn3"],
+                      "criteria": 0.15, "operator":["gt"]},
+                     {"name": thisModule.ProfitName["ROEn4"],
+                      "criteria": 0.15, "operator":["gt"]}],
+        },
+        {
+            "name": "Gross Margin>15%",
+            "mode": "valueInvestment",
+            "data": [{"name": thisModule.GrowthName["grossMargin"],
+                      "criteria": 0.15, "operator":["gt"]}],
+        },
+        {
+            "name": "Gross Margin>30%",
+            "mode": "growthInvestment",
+            "data": [{"name": thisModule.GrowthName["grossMargin"],
+                      "criteria": 0.30, "operator":["gt"]}],
+        },
+        {
+            "name": "Operating Margin>10%",
+            "mode": "both",
+            "data": [{"name": thisModule.ProfitName["operatingMargin"],
+                      "criteria": 0.1, "operator":["gt"]}],
+        },
+        {
+            "name": "ROE stability",
+            "mode": "valueInvestment",
+            "data": [{"name": thisModule.ProfitName["maxROEinFiveyears"],
+                      "name2": thisModule.ProfitName["minROEinFiveyears"], "criteria": 4, "operator":["lt"]}],
+        },
+        {
+            "name": "High Free cash flow",
+            "mode": "valueInvestment",
+            "data": [{"name": thisModule.ProfitName["freeCashFlow"], "criteria": 0, "operator":["gt"]},
+                     {"name": thisModule.ProfitName["freeCashFlow"], "name2":thisModule.ShareHolderName['totalDividend'], "criteria": 1, "operator":["gt"]}],
+        },
+        {
+            "name": "Allow negitative cash flow",
+            "mode": "growthInvestment",
+            "data": [{"name": thisModule.ProfitName["freeCashFlow"],
+                      "criteria": 0, "operator":["lt"]}],
+        },
+        {
+            "name": "FCF/OCF>80%",
+            "mode": "valueInvestment",
+            "data": [{"name": thisModule.ProfitName["freeCashFlow"],
+                      "name2":thisModule.ProfitName['operatingCashFlow'], "criteria": 0.8, "operator":["gt"]}]
+        },
+        {
+            "name": "FCF/OCF >30%",
+            "mode": "growthInvestment",
+            "data": [{"name": thisModule.ProfitName["freeCashFlow"],
+                      "name2":thisModule.ProfitName['operatingCashFlow'], "criteria": 0.3, "operator":["gt"]}]
+        }
     ],
     Growth=[
-        [{"name": thisModule.GrowthName["reinvestmentRate"],
-          "criteria": 0, "operator":"lt"}],
-        [{"name": thisModule.GrowthName["reinvestmentRate"],
-          "criteria": 0, "operator":"lt"}],
-
+        {
+            "name": "RR<=0",
+            "mode": "valueInvestment",
+            "data": [{"name": thisModule.GrowthName["reinvestmentRate"],
+                      "criteria": 0, "operator":["lt"]}],
+        },
+        {
+            "name": "RR>0",
+            "mode": "growthInvestment",
+            "data": [{"name": thisModule.GrowthName["reinvestmentRate"],
+                      "criteria": 0, "operator":["gt"]}],
+        },
+        {
+            "name": "Operating Income Growth % > 0",
+            "mode": "valueInvestment",
+            "data": [{"name": thisModule.GrowthName["reinvestmentRate"],
+                      "criteria": 0, "operator":["lt"]}],
+        },
+        {
+            "name": "Operating Income Growth % > 10%",
+            "mode": "growthInvestment",
+            "data": [{"name": thisModule.GrowthName["operatingIncomeGrowthn1"],
+                      "criteria": 0.1, "operator":["gt"]}],
+        },
+        {
+            "name": "Operating Income Growth % > 15% in 3 years",
+            "mode": "growthInvestment",
+            "data": [{"name": thisModule.GrowthName["operatingIncomeGrowth"], "criteria": 0.15, "operator":["gt"]},
+                     {"name": thisModule.GrowthName["operatingIncomeGrowthn1"],
+                      "criteria": 0.15, "operator":["gt"]},
+                     {"name": thisModule.GrowthName["operatingIncomeGrowthn2"], "criteria": 0.15, "operator":["gt"]}],
+        },
+        {
+            "name": "total revenue % is positive in 3 years",
+            "mode": "growthInvestment",
+            "data": [{"name": thisModule.GrowthName["revenueGrowth"], "criteria": 0, "operator":["gt"]},
+                     {"name": thisModule.GrowthName["revenueGrowthn1"],
+                      "criteria": 0, "operator":["gt"]},
+                     {"name": thisModule.GrowthName["revenueGrowthn2"], "criteria": 0, "operator":["gt"]}]
+        }
     ],
-    Safety=[[{"name": thisModule.SafetyName["debtEquityRatio"],
-              "criteria": 1, "operator":"lt"}],
-            [{"name": thisModule.SafetyName["debtCapitalRatio"],
-              "criteria": "50%", "operator":"lt"}],
-            [{"name": thisModule.SafetyName["quickRatio"],
-              "criteria": "100%", "operator":"gt"}],
-            [{"name": thisModule.SafetyName["dividendsFCFRatio"],
-              "criteria": "200%", "operator":"lt"}]]
-)
-
-checkGrowthInvestment = dict(
-    ShareHolder=[
-        [{"name": thisModule.ShareHolderName["payoutRatio"],
-            "criteria": "80%", "operator":"lteq"}],
-    ],
-    Profit=[
-        [{"name": thisModule.ProfitName["ROE"],
-            "criteriaName": thisModule.ProfitName["maxROEinFiveyears"], "operator":"eq"}],
-        [{"name": thisModule.ProfitName["ROA"],
-            "criteriaName": thisModule.ProfitName["ROE"], "operator":"gt80%"}],
-        [{"name": thisModule.ProfitName["ROA"], "criteria": 0, "operator":"gt"}],
-        [{"name": thisModule.ProfitName["grossMargin"],
-          "criteria": "30%", "operator":"gt"}],
-        [{"name": thisModule.ProfitName["operatingMargin"],
-          "criteria": "10%", "operator":"gt"}],
-        [{"name": thisModule.ProfitName["freeCashFlow"],
-            "criteria": 0, "operator":"lt"}],
-        [{"name": thisModule.ProfitName["freeCashFlow"],
-            "criteriaName":thisModule.ProfitName['operatingCashFlow'], "operator":"gt30%"}]
-    ],
-    Growth=[
-        [{"name": thisModule.GrowthName["reinvestmentRate"],
-          "criteria": 0, "operator":"gt"}],
-        [{"name": thisModule.GrowthName["operatingIncomeGrowth"],
-            "criteria": 0, "operator":"gt"}],
-        [{"name": thisModule.GrowthName["operatingIncomeGrowthn1"],
-            "criteria": "10%", "operator":"gt"}],
-        [{"name": thisModule.GrowthName["operatingIncomeGrowth"], "criteria": "15%", "operator":"gt"},
-         {"name": thisModule.GrowthName["operatingIncomeGrowthn1"],
-             "criteria": "15%", "operator":"gt"},
-         {"name": thisModule.GrowthName["operatingIncomeGrowthn2"], "criteria": "15%", "operator":"gt"}],
-        [{"name": thisModule.GrowthName["revenueGrowth"], "criteria": "0", "operator":"gt"},
-         {"name": thisModule.GrowthName["revenueGrowthn1"],
-             "criteria": "0", "operator":"gt"},
-         {"name": thisModule.GrowthName["revenueGrowthn2"], "criteria": "0", "operator":"gt"}]
-    ],
-    Safety=[[{"name": thisModule.SafetyName["debtCapitalRatio"],
-              "criteria": "50%", "operator":"lt"}]]
+    Safety=[
+        {
+            "name": "D/E<1",
+            "mode": "valueInvestment",
+            "data": [{"name": thisModule.SafetyName["debtEquityRatio"],
+                      "criteria": 1, "operator":["lt"]}],
+        },
+        {
+            "name": "D/C Ratio<50%",
+            "mode": "both",
+            "data": [{"name": thisModule.SafetyName["debtCapitalRatio"],
+                      "criteria": 0.5, "operator":["lt"]}],
+        },
+        {
+            "name": "Quick Ratio>100%",
+            "mode": "valueInvestment",
+            "data": [{"name": thisModule.SafetyName["quickRatio"],
+                      "criteria": 1, "operator":["gt"]}],
+        },
+        {
+            "name": "Dividends / FCF Ratio <200%",
+            "mode": "valueInvestment",
+            "data": [{"name": thisModule.SafetyName["dividendsFCFRatio"],
+                      "criteria": 2, "operator":["lt"]}]
+        }
+    ]
 )

@@ -60,9 +60,9 @@ class Profit(Super):
         self.setOutput(
             10, self.colName["operatingMargin"], output, self.latestYear)
 
-    def setGrossMargin(self):
-        output = self.getGrossMargin()
-        self.setOutput(9, self.colName["grossMargin"], output, self.latestYear)
+    # def setGrossMargin(self):
+    #     output = self.getGrossMargin()
+    #     self.setOutput(9, self.colName["grossMargin"], output, self.latestYear)
 
     def setROA(self):
         output = self.getROA()
