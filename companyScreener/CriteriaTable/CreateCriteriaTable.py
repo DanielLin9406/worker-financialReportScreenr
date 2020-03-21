@@ -1,6 +1,7 @@
 import config
 import pandas as pd
 import numpy as np
+import copy
 
 # def getCriteriaList():
 #     return config.checkValueInvestment()
@@ -15,8 +16,6 @@ def gt(para1, para2, criteria):
 
 def lt(para1, para2, criteria):
     if para2 is not None:
-        print(para1)
-        print(para2)
         return para1.div(para2).lt(criteria)
     else:
         return para1.lt(criteria)
@@ -35,11 +34,8 @@ def criteriaSwitcher(condition, parasTable, company):
         "lt": lt,
         "eq": eq
     }
-
-    function = switch.get(condition["operator"].pop())
+    function = switch.get(copy.deepcopy(condition["operator"]).pop())
     para1 = parasTable.get(condition["name"])
-    print(para1)
-    print(condition["name"])
     criteria = pd.Series([condition["criteria"]], index=[
                          company])
     if "name2" in condition:
@@ -65,13 +61,39 @@ def checkCriteria(parasTable, company, test):
     return all(ele == True for ele in result)
 
 
-def loopConfig(parasTable, company, listName):
+def countTrue(countTrueDF, company, listName):
+    trueNumber = {}
+    total = {}
+    ratioPars = {}
     result = pd.DataFrame()
-    for test in config.criteria[listName]:
-        result.at[company, test["name"]] = checkCriteria(
-            parasTable, company, test)
+    df = pd.concat(countTrueDF, axis=0)
+    for index in df.axes[1].values:
+        trueNumber[index] = np.sum(
+            df.get(index).dropna().convert_dtypes(convert_boolean=True))
+        total[index] = len(df.get(index).dropna())
+        ratioPars[index] = '/'.join([str(trueNumber[index]),
+                                     str(total[index])])
+        result.at[company, '-'.join([listName, str(index)])] = ratioPars[index]
     return result
 
 
+def loopConfig(parasTable, company, listName):
+    resultDF = pd.DataFrame()
+    countTrueDFList = []
+    for test in config.criteria[listName]:
+        boolean = checkCriteria(parasTable, company, test)
+        resultDF.at[company, test["name"]] = boolean
+        countTrueDFList.append(pd.DataFrame(
+            [[boolean]*len(test["mode"])], index=[test["name"]], columns=test["mode"], dtype="boolean"))
+
+    return {"DF": resultDF, "TrueNum": countTrue(countTrueDFList, company, listName)}
+
+
 def analyzeData(parasTable, company):
-    return pd.concat([loopConfig(parasTable, company, "ShareHolder"), loopConfig(parasTable, company, "FScore"), loopConfig(parasTable, company, "Profit"), loopConfig(parasTable, company, "Growth"), loopConfig(parasTable, company, "Safety")], axis=1)
+    ShareHolder = loopConfig(parasTable, company, "ShareHolder")
+    FScore = loopConfig(parasTable, company, "FScore")
+    Profit = loopConfig(parasTable, company, "Profit")
+    Growth = loopConfig(parasTable, company, "Growth")
+    Safety = loopConfig(parasTable, company, "Safety")
+    return pd.concat([ShareHolder["DF"], FScore["DF"], Profit["DF"], Growth["DF"], Safety["DF"], FScore["TrueNum"], ShareHolder["TrueNum"],
+                      Profit["TrueNum"], Growth["TrueNum"], Safety["TrueNum"]], axis=1)

@@ -35,10 +35,10 @@ class Profit(Super):
 
     def setEPS(self):
         output = self.getEPS()
-        self.setOutput(17, self.colName["EPSn3"], output, self.threeYearsAgo)
-        self.setOutput(16, self.colName["EPSn2"], output, self.twoYearsAgo)
-        self.setOutput(15, self.colName["EPSn1"], output, self.lastYear)
         self.setOutput(14, self.colName["EPS"], output, self.latestYear)
+        self.setOutput(15, self.colName["EPSn1"], output, self.lastYear)
+        self.setOutput(16, self.colName["EPSn2"], output, self.twoYearsAgo)
+        self.setOutput(17, self.colName["EPSn3"], output, self.threeYearsAgo)
 
     def setFreeCashFlow(self):
         output = self.getFreeCashFlow()
@@ -85,8 +85,8 @@ class Profit(Super):
 
     def setROE(self):
         output = self.getROE()
-        self.setOutput(4, self.colName["ROEn4"], output, self.fourYearsAgo)
-        self.setOutput(3, self.colName["ROEn3"], output, self.threeYearsAgo)
-        self.setOutput(2, self.colName["ROEn2"], output, self.twoYearsAgo)
-        self.setOutput(1, self.colName["ROEn1"], output, self.lastYear)
         self.setOutput(0, self.colName["ROE"], output, self.latestYear)
+        self.setOutput(1, self.colName["ROEn1"], output, self.lastYear)
+        self.setOutput(2, self.colName["ROEn2"], output, self.twoYearsAgo)
+        self.setOutput(3, self.colName["ROEn3"], output, self.threeYearsAgo)
+        self.setOutput(4, self.colName["ROEn4"], output, self.fourYearsAgo)

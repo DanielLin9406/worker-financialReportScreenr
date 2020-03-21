@@ -24,7 +24,7 @@ class Super:
         return self.combinedDF.loc["Total Revenue"]
 
     def getCostofGoodsSold(self):
-        return -self.combinedDF.loc["Cost of Goods and Services"]
+        return -self.getDFfilter("Cost of Goods and Services")
 
     def getOperatingCashFlow(self):
         return self.combinedDF.loc["Cash Generated from Operating Activities"]
@@ -42,7 +42,7 @@ class Super:
         return self.combinedDF.loc["Total Equity"]
 
     def getPrice(self):
-        return self.priceDF.loc[0, "close"]
+        return pd.Series(self.priceDF.loc[0, "close"], index=[self.latestYear, self.lastYear, self.twoYearsAgo, self.threeYearsAgo, self.fourYearsAgo], dtype="float")
 
     def getPretaxIncome(self):
         return self.combinedDF.loc['Pretax Income']
@@ -61,6 +61,12 @@ class Super:
 
     def getOperatingExpenses(self):
         return -self.combinedDF.loc["Operating Income/Expenses"]
+
+    def getDFfilter(self, parName):
+        if parName in self.combinedDF.index:
+            return self.combinedDF.loc[parName]
+        else:
+            return pd.Series([np.nan, np.nan, np.nan, np.nan, np.nan, np.nan], index=[self.latestYear, self.lastYear, self.twoYearsAgo, self.threeYearsAgo, self.fourYearsAgo, 'TTM'])
 
     def getChangeInWorkingCapital(self):
         return np.divide(self.getCurrentLiabilities(), self.getCurrentAssets())

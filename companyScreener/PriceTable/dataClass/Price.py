@@ -127,35 +127,87 @@ class Price(Super):
     def getDividendAfterNYears(self):
         return self.getDividend()*np.power(1+self.getYieldGrowthRate(), self.getHighGrowthPeriod())
 
+    def getAVGPriceofGrowthInvesement(self):
+        output = np.average(
+            [self.getStockPriceFCFE().get(self.latestYear), self.getStockPriceFCFF().get(self.latestYear), self.getEBTPriceRatio().get(self.latestYear)])
+        return pd.Series([output], index=[self.latestYear])
+
+    def getAVGPriceofValueInvesement(self):
+        output = np.average([self.getStockPriceDDM2().get(self.latestYear), self.getStockPriceDDMH(
+        ).get(self.latestYear), self.getBenjaminGrahamPrice().get(self.latestYear), self.getEBTPriceRatio().get(self.latestYear)])
+        return pd.Series([output], index=[self.latestYear])
+
+    def setAVGPriceofGrowthInvesement(self):
+        output = self.getAVGPriceofGrowthInvesement()
+        self.setOutput(
+            29, self.colName["CAvgPriceofGrowthInvestment"], output, self.latestYear)
+        self.setOutput(
+            30, self.colName["RAvgPriceofGrowthInvestment"], output, self.latestYear)
+        self.setOutput(
+            31, self.colName["EAvgPriceofGrowthInvestment"], output, self.latestYear)
+
+    def setAVGPriceofValueInvesement(self):
+        output = self.getAVGPriceofValueInvesement()
+        self.setOutput(
+            26, self.colName["CAvgPriceofValueInvestment"], output, self.latestYear)
+        self.setOutput(
+            27, self.colName["RAvgPriceofValueInvestment"], output, self.latestYear)
+        self.setOutput(
+            28, self.colName["EAvgPriceofValueInvestment"], output, self.latestYear)
+
     def setEBTPriceRatio(self):
         output = self.getEBTPriceRatio()
         self.setOutput(
-            13, self.colName["EBTRatio"], output, self.latestYear)
+            23, self.colName["CEBTRatio"], output, self.latestYear)
+        self.setOutput(
+            24, self.colName["REBTRatio"], output, self.latestYear)
+        self.setOutput(
+            25, self.colName["EEBTRatio"], output, self.latestYear)
 
     def setBenjaminGrahamPrice(self):
         output = self.getBenjaminGrahamPrice()
         self.setOutput(
-            12, self.colName["BenjaminGraham"], output, self.latestYear)
+            20, self.colName["CBenjaminGraham"], output, self.latestYear)
+        self.setOutput(
+            21, self.colName["RBenjaminGraham"], output, self.latestYear)
+        self.setOutput(
+            22, self.colName["EBenjaminGraham"], output, self.latestYear)
 
     def setStockPriceFCFF(self):
         output = self.getStockPriceFCFF()
         self.setOutput(
-            11, self.colName["PriceFCFF"], output, self.latestYear)
+            17, self.colName["CPriceFCFF"], output, self.latestYear)
+        self.setOutput(
+            18, self.colName["RPriceFCFF"], output, self.latestYear)
+        self.setOutput(
+            19, self.colName["EPriceFCFF"], output, self.latestYear)
 
     def setStockPriceFCFE(self):
         output = self.getStockPriceFCFE()
         self.setOutput(
-            10, self.colName["PriceFCFE"], output, self.latestYear)
+            14, self.colName["CPriceFCFE"], output, self.latestYear)
+        self.setOutput(
+            15, self.colName["RPriceFCFE"], output, self.latestYear)
+        self.setOutput(
+            16, self.colName["EPriceFCFE"], output, self.latestYear)
 
     def setStockPriceDDMH(self):
         output = self.getStockPriceDDMH()
         self.setOutput(
-            9, self.colName["PriceDDMH"], output, self.latestYear)
+            11, self.colName["CPriceDDMH"], output, self.latestYear)
+        self.setOutput(
+            12, self.colName["RPriceDDMH"], output, self.latestYear)
+        self.setOutput(
+            13, self.colName["EPriceDDMH"], output, self.latestYear)
 
     def setStockPriceDDM2(self):
         output = self.getStockPriceDDM2()
         self.setOutput(
-            8, self.colName["PriceDDM2"], output, self.latestYear)
+            8, self.colName["CPriceDDM2"], output, self.latestYear)
+        self.setOutput(
+            9, self.colName["RPriceDDM2"], output, self.latestYear)
+        self.setOutput(
+            10, self.colName["EPriceDDM2"], output, self.latestYear)
 
     def setStockPrice(self):
         output = self.getPrice()

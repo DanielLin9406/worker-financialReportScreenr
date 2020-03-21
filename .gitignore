@@ -4,3 +4,5 @@ __pycache__
 lib
 pip*
 pyvenv.cfg
+credentials.json
+creds.json

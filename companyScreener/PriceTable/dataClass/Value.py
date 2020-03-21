@@ -13,7 +13,7 @@ class Value(Super):
         self.company = args[2]
 
     def getResearch(self):
-        return -self.combinedDF.loc["Research and Development Expenses"]
+        return -self.getDFfilter("Research and Development Expenses")
 
     def getPRRatio(self):
         return np.divide(self.getPrice()*self.getShares(), self.getResearch())

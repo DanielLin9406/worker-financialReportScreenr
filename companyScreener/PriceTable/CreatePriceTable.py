@@ -11,12 +11,16 @@ def createPriceDF(combinedDF, priceDFList, company):
     priceInstance.setDiscountRate()
     priceInstance.setMarginOfSafety()
     priceInstance.setDividendAfterNYears()
+    priceInstance.setTreasuriesYield()
+    priceInstance.setStockPrice()
     priceInstance.setStockPriceDDM2()
     priceInstance.setStockPriceDDMH()
     priceInstance.setStockPriceFCFE()
     priceInstance.setStockPriceFCFF()
     priceInstance.setBenjaminGrahamPrice()
     priceInstance.setEBTPriceRatio()
+    priceInstance.setAVGPriceofValueInvesement()
+    priceInstance.setAVGPriceofGrowthInvesement()
     return priceInstance.getOutput()
 
 

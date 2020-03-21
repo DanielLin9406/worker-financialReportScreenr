@@ -16,7 +16,7 @@ class Safety(Super):
         return self.combinedDF.loc["Long Term Debt"]
 
     def getShortTermDebt(self):
-        return self.combinedDF.loc["Current Debt"]
+        return self.combinedDF.loc["Financial Liabilities, Current"]
 
     def getTotalAssests(self):
         return self.combinedDF.loc["Total Assets"]
@@ -25,7 +25,7 @@ class Safety(Super):
         return self.combinedDF.loc["Other Current Assets"]
 
     def getInventory(self):
-        return self.combinedDF.loc["Inventories"]
+        return self.getDFfilter("Inventories")
 
     def getCurrentRatio(self):
         return np.divide(self.getCurrentAssets(), self.getCurrentLiabilities())
@@ -51,9 +51,9 @@ class Safety(Super):
     def setSharesCapital(self):
         output = self.getSharesCapital()
         self.setOutput(
-            11, self.colName["shareCapitaln1"], output, self.lastYear)
-        self.setOutput(
             10, self.colName["shareCapital"], output, self.latestYear)
+        self.setOutput(
+            11, self.colName["shareCapitaln1"], output, self.lastYear)
 
     def setDividendsFCFRatio(self):
         output = self.getDividendsFCFRatio()
@@ -82,13 +82,13 @@ class Safety(Super):
     def setCurrentRatio(self):
         output = self.getCurrentRatio()
         self.setOutput(
-            4, self.colName["currentRation1"], output, self.lastYear)
-        self.setOutput(
             3, self.colName["currentRatio"], output, self.latestYear)
+        self.setOutput(
+            4, self.colName["currentRation1"], output, self.lastYear)
 
     def setLongTermDebt(self):
         output = self.getLongTermDebt()
         self.setOutput(
-            1, self.colName["longTermDebtn1"], output, self.lastYear)
-        self.setOutput(
             0, self.colName["longTermDebt"], output, self.latestYear)
+        self.setOutput(
+            1, self.colName["longTermDebtn1"], output, self.lastYear)

@@ -45,20 +45,20 @@ class Growth(Super):
     def setRevenueGrowth(self):
         output = self.getRevenueGrowth()
         self.setOutput(
-            12, self.colName["revenueGrowthn2"], output, self.twoYearsAgo)
+            10, self.colName["revenueGrowth"], output, self.latestYear)
         self.setOutput(
             11, self.colName["revenueGrowthn1"], output, self.lastYear)
         self.setOutput(
-            10, self.colName["revenueGrowth"], output, self.latestYear)
+            12, self.colName["revenueGrowthn2"], output, self.twoYearsAgo)
 
     def setOperatingIncomeGrowth(self):
         output = self.getOperatingIncomeGrowth()
         self.setOutput(
-            9, self.colName["operatingIncomeGrowthn2"], output, self.twoYearsAgo)
+            7, self.colName["operatingIncomeGrowth"], output, self.latestYear)
         self.setOutput(
             8, self.colName["operatingIncomeGrowthn1"], output, self.lastYear)
         self.setOutput(
-            7, self.colName["operatingIncomeGrowth"], output, self.latestYear)
+            9, self.colName["operatingIncomeGrowthn2"], output, self.twoYearsAgo)
 
     def setReinvestmentRate(self):
         output = self.getReinvestmentRate()
@@ -68,16 +68,16 @@ class Growth(Super):
     def setAssetTurnoverRatio(self):
         output = self.getAssetTurnoverRatio()
         self.setOutput(
-            5, self.colName["assetTurnoverRation1"], output, self.lastYear)
-        self.setOutput(
             4, self.colName["assetTurnoverRatio"], output, self.latestYear)
+        self.setOutput(
+            5, self.colName["assetTurnoverRation1"], output, self.lastYear)
 
     def setGrossMargin(self):
         output = self.getGrossMargin()
-        self.setOutput(3, self.colName["grossMarginn1"], output, self.lastYear)
         self.setOutput(2, self.colName["grossMargin"], output, self.latestYear)
+        self.setOutput(3, self.colName["grossMarginn1"], output, self.lastYear)
 
     def setROTA(self):
         output = self.getROTA()
-        self.setOutput(1, self.colName["ROTAn1"], output, self.lastYear)
         self.setOutput(0, self.colName["ROTA"], output, self.latestYear)
+        self.setOutput(1, self.colName["ROTAn1"], output, self.lastYear)

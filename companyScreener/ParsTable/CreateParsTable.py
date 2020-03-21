@@ -31,7 +31,9 @@ def createProfitDF(combinedDF, priceDFList, company):
     # profitInstance.setGrossMargin()
     profitInstance.setOperatingMarin()
     profitInstance.setOperatingCashFlow()
+    profitInstance.setNetIncome()
     profitInstance.setFreeCashFlow()
+    profitInstance.setEPS()
     return profitInstance.getOutput()
 
 
@@ -43,15 +45,16 @@ def createGrowthDF(combinedDF, priceDFList, company):
     growthInstance.setReinvestmentRate()
     growthInstance.setOperatingIncomeGrowth()
     growthInstance.setRevenueGrowth()
+    growthInstance.setEPSGrowth()
     return growthInstance.getOutput()
 
 
 def createSafetyDF(combinedDF, priceDFList, company):
     safetyInstance = Safety(combinedDF, priceDFList, company)
     safetyInstance.setLongTermDebt()
-    safetyInstance.setDebtEquityRatio()
     safetyInstance.setCurrentRatio()
     safetyInstance.setQuickRatio()
+    safetyInstance.setDebtEquityRatio()
     safetyInstance.setDebtCapitalRatio()
     safetyInstance.setDebtAssetsRatio()
     safetyInstance.setDividendsFCFRatio()
