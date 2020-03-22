@@ -24,9 +24,6 @@ class Growth(Super):
     def getROTA(self):
         return np.divide(self.getEBIT(), self.getTotalAssets())
 
-    def getAssetTurnoverRatio(self):
-        return np.divide(self.getRevenue(), self.getTotalAssets())
-
     def getRevenueGrowth(self):
         latestYear = self.getRevenue().get(self.latestYear)
         lastYear = self.getRevenue().get(self.lastYear)

@@ -71,14 +71,15 @@ def countTrue(countTrueDF, company, listName):
         trueNumber[index] = np.sum(
             df.get(index).dropna().convert_dtypes(convert_boolean=True))
         total[index] = len(df.get(index).dropna())
-        ratioPars[index] = '/'.join([str(trueNumber[index]),
-                                     str(total[index])])
+        ratioPars[index] = np.divide(trueNumber[index], total[index])
+        # ratioPars[index] = '/'.join([str(trueNumber[index]),
+        #                              str(total[index])])
         result.at[company, '-'.join([listName, str(index)])] = ratioPars[index]
     return result
 
 
 def loopConfig(parasTable, company, listName):
-    resultDF = pd.DataFrame()
+    resultDF = pd.DataFrame(dtype="boolean")
     countTrueDFList = []
     for test in config.criteria[listName]:
         boolean = checkCriteria(parasTable, company, test)

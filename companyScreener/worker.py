@@ -13,7 +13,7 @@ def getStockPrice(company):
 
 
 def getTreasuriesYield():
-    return quandl.get("USTREASURY/REALYIELD").sort_index(ascending=False).iloc[0]
+    return np.divide(quandl.get("USTREASURY/REALYIELD").sort_index(ascending=False).iloc[0], 100)
 
 
 def formatedTable(financialDFCombined):

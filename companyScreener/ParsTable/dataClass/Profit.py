@@ -15,22 +15,28 @@ class Profit(Super):
     def getOperatingMarin(self):
         return np.divide(self.getOperatingIncome(), self.getRevenue())
 
+    def getNetIncomeMargin(self):
+        return np.divide(self.getNetIncome(), self.getRevenue())
+
+    def getFinancialLeverage(self):
+        return np.divide(self.getTotalAssets(), self.getStockholdersEquity())
+
     def getROA(self):
-        return np.divide(self.getOperatingIncome(), self.getTotalAssets())
+        return self.getNetIncomeMargin()*self.getAssetTurnoverRatio()
 
     def getROE(self):
-        return np.divide(self.getNetIncome(), self.getStockholdersEquity())
+        return self.getNetIncomeMargin()*self.getAssetTurnoverRatio()*self.getFinancialLeverage()
 
-    def getAvgROEin5years(self):
-        output = self.getROE().head(5).mean()
+    def getAvgROEin4years(self):
+        output = self.getROE().head(4).mean()
         return pd.Series([output], index=[self.latestYear])
 
-    def getMinROEin5Years(self):
-        output = self.getROE().head(5).min()
+    def getMinROEin4Years(self):
+        output = self.getROE().head(4).min()
         return pd.Series([output], index=[self.latestYear])
 
-    def getMaxROEin5Years(self):
-        output = self.getROE().head(5).max()
+    def getMaxROEin4Years(self):
+        output = self.getROE().head(4).max()
         return pd.Series([output], index=[self.latestYear])
 
     def setEPS(self):
@@ -68,20 +74,20 @@ class Profit(Super):
         output = self.getROA()
         self.setOutput(8, self.colName["ROA"], output, self.latestYear)
 
-    def setMinROEin5Years(self):
-        output = self.getMinROEin5Years()
+    def setMinROEin4Years(self):
+        output = self.getMinROEin4Years()
         self.setOutput(
-            7, self.colName["minROEinFiveyears"], output, self.latestYear)
+            7, self.colName["minROEinFouryears"], output, self.latestYear)
 
-    def setMaxROEin5Years(self):
-        output = self.getMaxROEin5Years()
+    def setMaxROEin4Years(self):
+        output = self.getMaxROEin4Years()
         self.setOutput(
-            6, self.colName["maxROEinFiveyears"], output, self.latestYear)
+            6, self.colName["maxROEinFouryears"], output, self.latestYear)
 
-    def setAvgROEin5years(self):
-        output = self.getAvgROEin5years()
+    def setAvgROEin4years(self):
+        output = self.getAvgROEin4years()
         self.setOutput(
-            5, self.colName["fiveYearAverageROE"], output, self.latestYear)
+            5, self.colName["fourYearAverageROE"], output, self.latestYear)
 
     def setROE(self):
         output = self.getROE()
@@ -89,4 +95,4 @@ class Profit(Super):
         self.setOutput(1, self.colName["ROEn1"], output, self.lastYear)
         self.setOutput(2, self.colName["ROEn2"], output, self.twoYearsAgo)
         self.setOutput(3, self.colName["ROEn3"], output, self.threeYearsAgo)
-        self.setOutput(4, self.colName["ROEn4"], output, self.fourYearsAgo)
+        # self.setOutput(4, self.colName["ROEn4"], output, self.fourYearsAgo)

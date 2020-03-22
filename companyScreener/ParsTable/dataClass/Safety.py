@@ -27,23 +27,35 @@ class Safety(Super):
     def getInventory(self):
         return self.getDFfilter("Inventories")
 
+    def getCashAndEquivalents(self):
+        return self.getDFfilter("Cash, Cash Equivalents and Short Term Investments")
+
+    def getMarketableSecurities(self):
+        return self.getDFfilter("Available-for-Sale Securities, Current")
+
+    def getAccountsReceivable(self):
+        return self.getDFfilter("Trade and Other Receivables, Current")
+
     def getCurrentRatio(self):
         return np.divide(self.getCurrentAssets(), self.getCurrentLiabilities())
 
     def getQuickRatio(self):
-        return np.divide(self.getCurrentAssets()-self.getOtherCurrentAssets()-self.getInventory(), self.getCurrentLiabilities())
+        if (self.getInventory().sum() == 0):
+            return np.divide(self.getCashAndEquivalents()+self.getMarketableSecurities()+self.getAccountsReceivable(), self.getCurrentLiabilities())
+        else:
+            return np.divide(self.getCurrentAssets()-self.getOtherCurrentAssets()-self.getInventory(), self.getCurrentLiabilities())
 
     def getDebtEquityRatio(self):
-        return np.divide(self.getTotalLiabilities(), self.getStockholdersEquity())
+        return np.divide(self.getShortTermDebt()+self.getLongTermDebt(), self.getStockholdersEquity())
 
     def getDebtCapitalRatio(self):
         return np.divide(self.getShortTermDebt()+self.getLongTermDebt(), self.getShortTermDebt()+self.getLongTermDebt()+self.getStockholdersEquity())
 
     def getDebtAssetsRatio(self):
-        return np.divide(self.getTotalLiabilities(), self.getTotalAssests())
+        return np.divide(self.getShortTermDebt()+self.getLongTermDebt(), self.getTotalAssests())
 
-    def getDividendsFCFRatio(self):
-        return np.divide(self.getDividend(), self.getFreeCashFlow())
+    def getTotalDividendsFCFRatio(self):
+        return np.divide(self.getTotalDividend(), self.getFreeCashFlow())
 
     def getSharesCapital(self):
         return self.getShares()
@@ -51,33 +63,35 @@ class Safety(Super):
     def setSharesCapital(self):
         output = self.getSharesCapital()
         self.setOutput(
-            10, self.colName["shareCapital"], output, self.latestYear)
+            11, self.colName["shareCapital"], output, self.latestYear)
         self.setOutput(
-            11, self.colName["shareCapitaln1"], output, self.lastYear)
+            12, self.colName["shareCapitaln1"], output, self.lastYear)
 
-    def setDividendsFCFRatio(self):
-        output = self.getDividendsFCFRatio()
+    def setTotalDividendsFCFRatio(self):
+        output = self.getTotalDividendsFCFRatio()
         self.setOutput(
-            9, self.colName["dividendsFCFRatio"], output, self.latestYear)
+            10, self.colName["totalDividendsFCFRatio"], output, self.latestYear)
 
     def setDebtAssetsRatio(self):
         output = self.getDebtAssetsRatio()
         self.setOutput(
-            8, self.colName["debtAssetRatio"], output, self.latestYear)
+            9, self.colName["debtAssetRatio"], output, self.latestYear)
 
     def setDebtCapitalRatio(self):
         output = self.getDebtCapitalRatio()
         self.setOutput(
-            7, self.colName["debtCapitalRatio"], output, self.latestYear)
+            8, self.colName["debtCapitalRatio"], output, self.latestYear)
 
     def setDebtEquityRatio(self):
         output = self.getDebtEquityRatio()
         self.setOutput(
-            6, self.colName["debtEquityRatio"], output, self.latestYear)
+            7, self.colName["debtEquityRatio"], output, self.latestYear)
 
     def setQuickRatio(self):
         output = self.getQuickRatio()
         self.setOutput(5, self.colName["quickRatio"], output, self.latestYear)
+        self.setOutput(
+            6, self.colName["quickRation1"], output, self.lastYear)
 
     def setCurrentRatio(self):
         output = self.getCurrentRatio()

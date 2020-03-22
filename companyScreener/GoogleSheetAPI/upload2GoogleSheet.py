@@ -22,7 +22,12 @@ def getTitleListFromDF(df, sheetName, company):
 
 
 def getValueListFromDF(df, sheetName, company):
-    return np.nan_to_num(df.astype(float, errors="ignore").values).tolist()
+    if 'Pars' in sheetName:
+        return np.nan_to_num(df.astype(float, errors="ignore").values).tolist()
+    elif 'Price' in sheetName:
+        return np.nan_to_num(df.astype(float, errors="ignore").values).tolist()
+    else:
+        return np.nan_to_num(df.values).tolist()
 
 
 def getRangeOfList(sheetName, idNum):
@@ -39,11 +44,7 @@ def getFormatedOfCell(sheetName, idNum):
         data = {
             "range": "".join(["F", str(idNum), ":BF", str(idNum)]),
             "formated": {
-                "horizontalAlignment": "CENTER",
-                "numberFormat": {
-                    "type": "NUMBER",
-                    "pattern": "#,#0.##"
-                }
+                "horizontalAlignment": "CENTER"
             }
         }
         return data

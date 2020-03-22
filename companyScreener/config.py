@@ -19,10 +19,10 @@ ProfitName = dict(
     ROEn1="ROE(n-1)",
     ROEn2="ROE(n-2)",
     ROEn3="ROE(n-3)",
-    ROEn4="ROE(n-4)",
-    fiveYearAverageROE="5-year Average ROE",
-    maxROEinFiveyears="Max ROE in 5 years",
-    minROEinFiveyears="Min ROE in 5 years",
+    # ROEn4="ROE(n-4)",
+    fourYearAverageROE="4-year Average ROE",
+    maxROEinFouryears="Max ROE in 4 years",
+    minROEinFouryears="Min ROE in 4 years",
     ROA="ROA",
     # grossMargin="Gross Margin",
     operatingMargin="Operating Margin",
@@ -57,10 +57,11 @@ SafetyName = dict(
     currentRatio="Current Ratio",
     currentRation1="Current Ratio(n-1)",
     quickRatio="Quick Ratio",
+    quickRation1="Quick Ratio(n-1)",
     debtEquityRatio="Debt/Equity Ratio",
     debtCapitalRatio="Debt/Capital Ratio",
     debtAssetRatio="Debt/Asset Ratio",
-    dividendsFCFRatio="Dividends/FCF Ratio",
+    totalDividendsFCFRatio="Total Dividends/FCF Ratio",
     shareCapital="Share capital",
     shareCapitaln1="Share capital(n-1)",
 )
@@ -229,7 +230,7 @@ criteria = dict(
             "name": "ROE(N) = Max(ROE)",
             "mode": ["growthInvestment"],
             "data": [{"name": thisModule.ProfitName["ROE"],
-                      "name2": thisModule.ProfitName["maxROEinFiveyears"], "criteria":1, "operator":["eq"]}],
+                      "name2": thisModule.ProfitName["maxROEinFouryears"], "criteria":1, "operator":["eq"]}],
         },
         {
             "name": "ROA/ROE>80%",
@@ -251,8 +252,6 @@ criteria = dict(
                      {"name": thisModule.ProfitName["ROEn2"],
                       "criteria": 0.15, "operator":["gt"]},
                      {"name": thisModule.ProfitName["ROEn3"],
-                      "criteria": 0.15, "operator":["gt"]},
-                     {"name": thisModule.ProfitName["ROEn4"],
                       "criteria": 0.15, "operator":["gt"]}],
         },
         {
@@ -276,8 +275,8 @@ criteria = dict(
         {
             "name": "ROE stability",
             "mode": ["valueInvestment"],
-            "data": [{"name": thisModule.ProfitName["maxROEinFiveyears"],
-                      "name2": thisModule.ProfitName["minROEinFiveyears"], "criteria": 4, "operator":["lt"]}],
+            "data": [{"name": thisModule.ProfitName["maxROEinFouryears"],
+                      "name2": thisModule.ProfitName["minROEinFouryears"], "criteria": 4, "operator":["lt"]}],
         },
         {
             "name": "High Free cash flow",
@@ -351,13 +350,17 @@ criteria = dict(
             "name": "D/E<1",
             "mode": ["valueInvestment"],
             "data": [{"name": thisModule.SafetyName["debtEquityRatio"],
-                      "criteria": 1, "operator":["lt"]}],
+                      "criteria": 1, "operator":["lt"]},
+                     {"name": thisModule.SafetyName["debtEquityRatio"],
+                      "criteria": 0, "operator":["gt"]}],
         },
         {
             "name": "D/C Ratio<50%",
             "mode": ["valueInvestment", "growthInvestment"],
             "data": [{"name": thisModule.SafetyName["debtCapitalRatio"],
-                      "criteria": 0.5, "operator":["lt"]}],
+                      "criteria": 0.5, "operator":["lt"]},
+                     {"name": thisModule.SafetyName["debtCapitalRatio"],
+                      "criteria": 0, "operator":["gt"]}],
         },
         {
             "name": "Quick Ratio>100%",
@@ -368,7 +371,7 @@ criteria = dict(
         {
             "name": "Dividends / FCF Ratio <200%",
             "mode": ["valueInvestment"],
-            "data": [{"name": thisModule.SafetyName["dividendsFCFRatio"],
+            "data": [{"name": thisModule.SafetyName["totalDividendsFCFRatio"],
                       "criteria": 2, "operator":["lt"]}]
         }
     ]

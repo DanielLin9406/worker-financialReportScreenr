@@ -24,13 +24,16 @@ class Super:
         return self.combinedDF.loc["Total Revenue"]
 
     def getCostofGoodsSold(self):
-        return -self.getDFfilter("Cost of Goods and Services")
+        return -self.getDFfilter("Cost of Revenue")
 
     def getOperatingCashFlow(self):
         return self.combinedDF.loc["Cash Generated from Operating Activities"]
 
     def getCapitalExpenditures(self):
-        return -self.combinedDF.loc["Purchase/Sale and Disposal of Property, Plant and Equipment, Net"]
+        if 'Capital Expenditure, Reported' in self.combinedDF.index:
+            return -self.combinedDF.loc["Capital Expenditure, Reported"]
+        else:
+            return -self.combinedDF.loc["Purchase/Sale and Disposal of Property, Plant and Equipment, Net"]
 
     def getCurrentLiabilities(self):
         return self.combinedDF.loc["Total Current Liabilities"]
@@ -62,11 +65,14 @@ class Super:
     def getOperatingExpenses(self):
         return -self.combinedDF.loc["Operating Income/Expenses"]
 
+    def getAssetTurnoverRatio(self):
+        return np.divide(self.getRevenue()*2, self.getTotalAssets().shift(periods=-1)+self.getTotalAssets())
+
     def getDFfilter(self, parName):
         if parName in self.combinedDF.index:
-            return self.combinedDF.loc[parName]
+            return self.combinedDF.loc[parName].fillna(0)
         else:
-            return pd.Series([np.nan, np.nan, np.nan, np.nan, np.nan, np.nan], index=[self.latestYear, self.lastYear, self.twoYearsAgo, self.threeYearsAgo, self.fourYearsAgo, 'TTM'])
+            return pd.Series([0., 0., 0., 0., 0., 0.], index=[self.latestYear, self.lastYear, self.twoYearsAgo, self.threeYearsAgo, self.fourYearsAgo, 'TTM'])
 
     def getChangeInWorkingCapital(self):
         return np.divide(self.getCurrentLiabilities(), self.getCurrentAssets())

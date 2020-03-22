@@ -24,9 +24,9 @@ def createDividendDF(combinedDF, priceDFList, company):
 def createProfitDF(combinedDF, priceDFList, company):
     profitInstance = Profit(combinedDF, priceDFList, company)
     profitInstance.setROE()
-    profitInstance.setAvgROEin5years()
-    profitInstance.setMaxROEin5Years()
-    profitInstance.setMinROEin5Years()
+    profitInstance.setAvgROEin4years()
+    profitInstance.setMaxROEin4Years()
+    profitInstance.setMinROEin4Years()
     profitInstance.setROA()
     # profitInstance.setGrossMargin()
     profitInstance.setOperatingMarin()
@@ -57,7 +57,7 @@ def createSafetyDF(combinedDF, priceDFList, company):
     safetyInstance.setDebtEquityRatio()
     safetyInstance.setDebtCapitalRatio()
     safetyInstance.setDebtAssetsRatio()
-    safetyInstance.setDividendsFCFRatio()
+    safetyInstance.setTotalDividendsFCFRatio()
     safetyInstance.setSharesCapital()
     return safetyInstance.getOutput()
 
