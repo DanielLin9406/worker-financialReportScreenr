@@ -49,6 +49,7 @@ GrowthName = dict(
     revenueGrowthn1="Revenue Growth(n-1)",
     revenueGrowthn2="Revenue Growth(n-2)",
     EPSGrowth="EPSGrowth",
+    EPSGrowth3YearAvg="3 Years Average EPSGrowth",
 )
 
 SafetyName = dict(
@@ -112,8 +113,8 @@ ValueName = dict(
 
 DDM = dict(
     highGrowthPeriod=10,
-    yieldGrowthRate=0.1034,
-    terminalYieldGrowth=0.03,
+    yieldGrowthRate=0.129,
+    terminalYieldGrowth=0.02,
     discountRate=0.09
 )
 

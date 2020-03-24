@@ -1,21 +1,16 @@
 import os
 import pathlib as plib
 import pandas as pd
+import time
 from ParsTable.CreateParsTable import createParsTable
 from PriceTable.CreatePriceTable import createPriceTable
 from CriteriaTable.CreateCriteriaTable import analyzeData
 from GoogleSheetAPI.upload2GoogleSheet import upload2Sheet
-from worker import filterEmptyDataSource, readReport, concatTable, formatedTable, getStockPrice, getTreasuriesYield
-
-
-def cleanDataWorker(dir):
-    rawDFDict = readReport(dir)
-    DFDict = filterEmptyDataSource(rawDFDict)
-    CombinedDF = concatTable(DFDict)
-    return formatedTable(CombinedDF)
+from worker import getStockPrice, getTreasuriesYield, cleanDataWorker
 
 
 def mainProcess(dir, company, idNum):
+    print('Start to Process data of', company)
     formatedCombinedDF = cleanDataWorker(dir)
     priceDF = getStockPrice(company)
     treasuriesYieldDF = getTreasuriesYield()
@@ -24,12 +19,14 @@ def mainProcess(dir, company, idNum):
         formatedCombinedDF, [priceDF], company)
     priceTable = createPriceTable(
         formatedCombinedDF, [priceDF, treasuriesYieldDF], company)
-
     analyzedTable = analyzeData(parasTable, company)
 
+    # TODO
+    print('Start to upload to Google Sheet at:', company)
     upload2Sheet(parasTable, 'Pars', company, idNum)
     upload2Sheet(priceTable, 'Price', company, idNum)
     upload2Sheet(analyzedTable, 'Analysis', company, idNum)
+    print('Finish Uploading to Google Sheet at:', company)
 
 
 def main(path):

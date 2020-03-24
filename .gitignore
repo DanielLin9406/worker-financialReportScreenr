@@ -6,3 +6,4 @@ pip*
 pyvenv.cfg
 credentials.json
 creds.json
+price.csv

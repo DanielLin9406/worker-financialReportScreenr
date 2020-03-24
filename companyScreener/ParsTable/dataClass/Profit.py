@@ -1,25 +1,25 @@
 import pandas as pd
-import numpy as np
 import config
 from ParsTable.dataClass.Super import Super
 
 
 class Profit(Super):
     def __init__(self, *args):
-        Super.__init__(self)
+        thisYear = args[0].columns[0]
+        Super.__init__(self, thisYear)
         self.colName = config.ProfitName
         self.combinedDF = args[0]
         self.priceDF = args[1][0]
         self.company = args[2]
 
     def getOperatingMarin(self):
-        return np.divide(self.getOperatingIncome(), self.getRevenue())
+        return self.divide(self.getOperatingIncome(), self.getRevenue())
 
     def getNetIncomeMargin(self):
-        return np.divide(self.getNetIncome(), self.getRevenue())
+        return self.divide(self.getNetIncome(), self.getRevenue())
 
     def getFinancialLeverage(self):
-        return np.divide(self.getTotalAssets(), self.getStockholdersEquity())
+        return self.divide(self.getTotalAssets(), self.getStockholdersEquity())
 
     def getROA(self):
         return self.getNetIncomeMargin()*self.getAssetTurnoverRatio()

@@ -6,7 +6,8 @@ from ParsTable.dataClass.Super import Super
 
 class Price(Super):
     def __init__(self, *args):
-        Super.__init__(self)
+        thisYear = args[0].columns[0]
+        Super.__init__(self, thisYear)
         self.colName = config.PriceName
         self.combinedDF = args[0]
         self.priceDF = args[1][0]
@@ -14,13 +15,13 @@ class Price(Super):
         self.company = args[2]
 
     def getTreasuriesYield(self):
-        return pd.Series(self.treasuriesYieldDF.loc["5 YR"], index=[self.latestYear], dtype="float")
+        return pd.Series(self.treasuriesYieldDF.iloc[0][0]/100, index=[self.latestYear], dtype="float")
 
     def getDepreciation(self):
-        return self.combinedDF.loc["Depreciation, Amortization and Depletion, Non-Cash Adjustment"]
+        return self.getParsSeries("Depreciation, Amortization and Depletion, Non-Cash Adjustment")
 
     def getNetBorrowings(self):
-        return self.combinedDF.loc["Issuance of/Repayments for Debt, Net"]
+        return self.getParsSeries("Issuance of/Repayments for Debt, Net")
 
     def getTaxRate(self):
         return pd.Series(config.FCFF["taxRate"],  index=[self.latestYear, self.lastYear, self.twoYearsAgo, self.threeYearsAgo, self.fourYearsAgo], dtype="float")
@@ -30,15 +31,15 @@ class Price(Super):
 
     def getBenjaminGrahamPrice(self):
         EPS = self.getEPS().get(self.latestYear)
-        EPSGrowth = self.getEPSGrowth().get(self.latestYear)
+        EPSGrowth = self.getEPSGrowth3YearAvg().get(self.latestYear)
         treasuriesYield = self.getTreasuriesYield().get(self.latestYear)
-        return pd.Series(np.divide(EPS*(2*EPSGrowth+8.5)*4.4, treasuriesYield), index=[self.latestYear])
+        return pd.Series(np.divide(EPS*(EPSGrowth*100+7)*4.4, self.getTreasuriesYield()*100), index=[self.latestYear])
 
     def getEBT(self):
-        return np.divide(self.getPretaxIncome(), self.getShares())
+        return self.divide(self.getPretaxIncome(), self.getShares())
 
     def getEBTPriceRatio(self):
-        return np.divide(self.getEBT(), 0.1)
+        return self.divide(self.getEBT(), 0.1)
 
     def getCostOfCapital(self):
         return pd.Series(config.FCFF["costOfCapital"],  index=[self.latestYear, self.lastYear, self.twoYearsAgo, self.threeYearsAgo, self.fourYearsAgo], dtype="float")
@@ -53,11 +54,12 @@ class Price(Super):
         return pd.Series(config.FCFE["infiniteGrowthRate"],  index=[self.latestYear, self.lastYear, self.twoYearsAgo, self.threeYearsAgo, self.fourYearsAgo], dtype="float")
 
     def getFCFF(self):
-        return (self.getEBIT()*(1-self.getTaxRate())+self.getDepreciation()+self.getChangeInWorkingCapital()-self.getCapitalExpenditures()).dropna()
+        return (self.getEBIT()*(1-self.getTaxRate()) + self.getDepreciation() +
+                self.getChangeInWorkingCapital() - self.getCapitalExpenditures())
 
     def getFCFE(self):
-        return (self.getNetIncome() + self.getDepreciation()+self.getChangeInWorkingCapital() -
-                self.getCapitalExpenditures()+self.getNetBorrowings()).dropna()
+        return (self.getNetIncome()+self.getDepreciation()+self.getChangeInWorkingCapital() +
+                self.getCapitalExpenditures()+self.getNetBorrowings())
 
     def getNPVofExplicitPeriodFCFF(self):
         return np.npv(self.getCostOfCapital().get(self.latestYear), self.getFCFF().tolist())
@@ -66,10 +68,11 @@ class Price(Super):
         return np.npv(self.getCostofEquity().get(self.latestYear), self.getFCFE().tolist())
 
     def getNPVofTerminalValueFCFF(self):
-        return np.divide(self.getFCFF().get(self.latestYear)*(1+self.getInfiniteGrowthRateFCFF().get(self.latestYear)), self.getCostOfCapital().get(self.latestYear)-self.getInfiniteGrowthRateFCFF().get(self.latestYear))
+        return self.divide(self.getFCFF().get(self.latestYear)*(1+self.getInfiniteGrowthRateFCFF().get(self.latestYear)), self.getCostOfCapital().get(self.latestYear)-self.getInfiniteGrowthRateFCFF().get(self.latestYear))
 
     def getNPVofTerminalValueFCFE(self):
-        return np.divide(self.getFCFE().get(self.latestYear)*(1+self.getInfiniteGrowthRateFCFE().get(self.latestYear)), self.getCostofEquity().get(self.latestYear)-self.getInfiniteGrowthRateFCFE().get(self.latestYear))
+        print(self.getFCFE())
+        return self.divide(self.getFCFE().get(self.latestYear)*(1+self.getInfiniteGrowthRateFCFE().get(self.latestYear)), self.getCostofEquity().get(self.latestYear)-self.getInfiniteGrowthRateFCFE().get(self.latestYear))
 
     def getEnterpriceValueFCFF(self):
         return self.getNPVofTerminalValueFCFF()+self.getNPVofExplicitPeriodFCFF()
@@ -78,13 +81,16 @@ class Price(Super):
         return self.getEnterpriceValueFCFF()+self.getFreeCashFlow()-self.getTotalLiabilities()
 
     def getEquityValueFCFE(self):
-        return self.getNPVofExplicitPeriodFCFE()+self.getNPVofTerminalValueFCFE()
+        # print(self.getNPVofExplicitPeriodFCFE())
+        # print(self.getNPVofTerminalValueFCFE())
+        return self.sum([self.getNPVofExplicitPeriodFCFE(), self.getNPVofTerminalValueFCFE()])
 
     def getStockPriceFCFF(self):
-        return np.divide(self.getEquityValueFCFF(), self.getShares())
+        # print('FCFF', self.getFCFF())
+        return self.divide(self.getEquityValueFCFF(), self.getShares())
 
     def getStockPriceFCFE(self):
-        return np.divide(self.getEquityValueFCFE(), self.getShares())
+        return self.divide(self.getEquityValueFCFE(), self.getShares())
 
     def getDiscountRate(self):
         return pd.Series(config.DDM["discountRate"],  index=[self.latestYear, self.lastYear, self.twoYearsAgo, self.threeYearsAgo, self.fourYearsAgo], dtype="float")
@@ -99,23 +105,27 @@ class Price(Super):
         return pd.Series(config.DDM["highGrowthPeriod"],  index=[self.latestYear, self.lastYear, self.twoYearsAgo, self.threeYearsAgo, self.fourYearsAgo], dtype="float")
 
     def getExplicitPeriodDDMH(self):
-        return np.divide(1+self.getDiscountRate(), self.getDiscountRate()-self.getYieldGrowthRate())
+        section1 = self.divide(1+self.getDiscountRate(),
+                               self.getDiscountRate()-self.getTerminalYieldGrowth())
+        return self.getDividend()*section1
 
     def getTerminalValueDDMH(self):
-        return self.getDividend()*self.getHighGrowthPeriod()*np.divide(self.getYieldGrowthRate()-self.getTerminalYieldGrowth(), self.getDiscountRate()-self.getYieldGrowthRate())
+        section1 = self.divide(self.getYieldGrowthRate(
+        )-self.getTerminalYieldGrowth(), self.getDiscountRate()-self.getTerminalYieldGrowth())
+        return self.getDividend()*self.getHighGrowthPeriod()*section1
 
     def getExplicitPeriodDDM2(self):
-        section1 = np.divide(1+self.getDiscountRate(),
-                             self.getDiscountRate()-self.getTerminalYieldGrowth())
-        section2 = np.divide(np.power(1+self.getYieldGrowthRate(), self.getHighGrowthPeriod()),
-                             np.power(self.getDiscountRate(), self.getHighGrowthPeriod()))
-        return self.getDividend()*section1*section2
+        section1 = self.divide(1+self.getDiscountRate(),
+                               self.getDiscountRate()-self.getYieldGrowthRate())
+        section2 = self.divide(np.power(1+self.getYieldGrowthRate(), self.getHighGrowthPeriod()),
+                               np.power(1+self.getDiscountRate(), self.getHighGrowthPeriod()))
+        return self.getDividend()*section1*(1-section2)
 
     def getTerminalValueDDM2(self):
-        section1 = np.divide(1+self.getDiscountRate(),
-                             self.getDiscountRate()-self.getYieldGrowthRate())
-        section2 = 1 - np.divide(np.power(1+self.getYieldGrowthRate(), self.getHighGrowthPeriod()),
-                                 np.power(self.getDiscountRate(), self.getHighGrowthPeriod()))
+        section1 = self.divide(1+self.getDiscountRate(),
+                               self.getDiscountRate()-self.getTerminalYieldGrowth())
+        section2 = self.divide(np.power(1+self.getYieldGrowthRate(), self.getHighGrowthPeriod()),
+                               np.power(1+self.getDiscountRate(), self.getHighGrowthPeriod()))
         return self.getDividend()*section1*section2
 
     def getStockPriceDDMH(self):

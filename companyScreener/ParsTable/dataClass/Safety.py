@@ -1,61 +1,67 @@
 import pandas as pd
-import numpy as np
 import config
 from ParsTable.dataClass.Super import Super
 
 
 class Safety(Super):
     def __init__(self, *args):
-        Super.__init__(self)
+        thisYear = args[0].columns[0]
+        Super.__init__(self, thisYear)
         self.colName = config.SafetyName
         self.combinedDF = args[0]
         self.priceDF = args[1][0]
         self.company = args[2]
 
+    def getDebt(self):
+        return self.getParsSeries("Debt")
+
     def getLongTermDebt(self):
-        return self.combinedDF.loc["Long Term Debt"]
+        def alterNative():
+            return self.getDebt()-self.getShortTermDebt()
+        return self.getParsSeries("Long Term Debt", alterNative)
 
     def getShortTermDebt(self):
-        return self.combinedDF.loc["Financial Liabilities, Current"]
+        return self.getParsSeries(['Financial Liabilities, Current',
+                                   'Other Loans, Current Debt'])
 
     def getTotalAssests(self):
-        return self.combinedDF.loc["Total Assets"]
+        return self.getParsSeries("Total Assets")
 
     def getOtherCurrentAssets(self):
-        return self.combinedDF.loc["Other Current Assets"]
+        return self.getParsSeries("Other Current Assets")
 
     def getInventory(self):
-        return self.getDFfilter("Inventories")
+        return self.getParsSeries("Inventories")
 
     def getCashAndEquivalents(self):
-        return self.getDFfilter("Cash, Cash Equivalents and Short Term Investments")
+        return self.getParsSeries("Cash, Cash Equivalents and Short Term Investments")
 
     def getMarketableSecurities(self):
-        return self.getDFfilter("Available-for-Sale Securities, Current")
+        return self.getParsSeries("Available-for-Sale Securities, Current")
 
     def getAccountsReceivable(self):
-        return self.getDFfilter("Trade and Other Receivables, Current")
+        return self.getParsSeries("Trade and Other Receivables, Current")
 
     def getCurrentRatio(self):
-        return np.divide(self.getCurrentAssets(), self.getCurrentLiabilities())
+        return self.divide(self.getCurrentAssets(), self.getCurrentLiabilities())
 
     def getQuickRatio(self):
         if (self.getInventory().sum() == 0):
-            return np.divide(self.getCashAndEquivalents()+self.getMarketableSecurities()+self.getAccountsReceivable(), self.getCurrentLiabilities())
+            return self.divide(self.getCashAndEquivalents()+self.getMarketableSecurities()+self.getAccountsReceivable(), self.getCurrentLiabilities())
         else:
-            return np.divide(self.getCurrentAssets()-self.getOtherCurrentAssets()-self.getInventory(), self.getCurrentLiabilities())
+            return self.divide(self.getCurrentAssets()-self.getOtherCurrentAssets()-self.getInventory(), self.getCurrentLiabilities())
 
     def getDebtEquityRatio(self):
-        return np.divide(self.getShortTermDebt()+self.getLongTermDebt(), self.getStockholdersEquity())
+        return self.divide(self.getShortTermDebt()+self.getLongTermDebt(), self.getStockholdersEquity())
 
     def getDebtCapitalRatio(self):
-        return np.divide(self.getShortTermDebt()+self.getLongTermDebt(), self.getShortTermDebt()+self.getLongTermDebt()+self.getStockholdersEquity())
+        return self.divide(self.getShortTermDebt()+self.getLongTermDebt(), self.getShortTermDebt()+self.getLongTermDebt()+self.getStockholdersEquity())
 
     def getDebtAssetsRatio(self):
-        return np.divide(self.getShortTermDebt()+self.getLongTermDebt(), self.getTotalAssests())
+        return self.divide(self.getShortTermDebt()+self.getLongTermDebt(), self.getTotalAssests())
 
     def getTotalDividendsFCFRatio(self):
-        return np.divide(self.getTotalDividend(), self.getFreeCashFlow())
+        return self.divide(self.getTotalDividend(), self.getFreeCashFlow())
 
     def getSharesCapital(self):
         return self.getShares()

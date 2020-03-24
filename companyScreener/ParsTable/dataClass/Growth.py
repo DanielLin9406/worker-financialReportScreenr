@@ -1,38 +1,43 @@
 import pandas as pd
-import numpy as np
 import config
 from ParsTable.dataClass.Super import Super
 
 
 class Growth(Super):
     def __init__(self, *args):
-        Super.__init__(self)
+        thisYear = args[0].columns[0]
+        Super.__init__(self, thisYear)
         self.colName = config.GrowthName
         self.combinedDF = args[0]
         self.priceDF = args[1][0]
         self.company = args[2]
 
     def getProvisionforIncomeTax(self):
-        return -self.combinedDF.loc['Provision for Income Tax']
+        return -self.getParsSeries('Provision for Income Tax')
 
     def get1MinusTax(self):
-        return np.divide(self.getPretaxIncome()-self.getProvisionforIncomeTax(), self.getPretaxIncome())
+        return self.divide(self.getPretaxIncome()-self.getProvisionforIncomeTax(), self.getPretaxIncome())
 
     def getReinvestmentRate(self):
-        return np.divide(self.getCapitalExpenditures()+self.getChangeInWorkingCapital(), self.getEBIT()*self.get1MinusTax())
+        return self.divide(self.getCapitalExpenditures()+self.getChangeInWorkingCapital(), self.getEBIT()*self.get1MinusTax())
 
     def getROTA(self):
-        return np.divide(self.getEBIT(), self.getTotalAssets())
+        return self.divide(self.getEBIT(), self.getTotalAssets())
 
     def getRevenueGrowth(self):
         latestYear = self.getRevenue().get(self.latestYear)
         lastYear = self.getRevenue().get(self.lastYear)
         twoYearsAgo = self.getRevenue().get(self.twoYearsAgo)
         threeYearsAgo = self.getRevenue().get(self.threeYearsAgo)
-        output1 = np.divide((latestYear-lastYear), lastYear)
-        output2 = np.divide((lastYear-twoYearsAgo), twoYearsAgo)
-        output3 = np.divide((twoYearsAgo-threeYearsAgo), threeYearsAgo)
+        output1 = self.divide((latestYear-lastYear), lastYear)
+        output2 = self.divide((lastYear-twoYearsAgo), twoYearsAgo)
+        output3 = self.divide((twoYearsAgo-threeYearsAgo), threeYearsAgo)
         return pd.Series([output1, output2, output3], index=[self.latestYear, self.lastYear, self.twoYearsAgo])
+
+    def setEPSGrowth3YearAvg(self):
+        output = self.getEPSGrowth3YearAvg()
+        self.setOutput(
+            14, self.colName["EPSGrowth3YearAvg"], output, self.latestYear)
 
     def setEPSGrowth(self):
         output = self.getEPSGrowth()

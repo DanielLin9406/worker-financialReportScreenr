@@ -46,6 +46,7 @@ def createGrowthDF(combinedDF, priceDFList, company):
     growthInstance.setOperatingIncomeGrowth()
     growthInstance.setRevenueGrowth()
     growthInstance.setEPSGrowth()
+    growthInstance.setEPSGrowth3YearAvg()
     return growthInstance.getOutput()
 
 

@@ -6,7 +6,8 @@ from ParsTable.dataClass.Super import Super
 
 class Dividend(Super):
     def __init__(self, *args):
-        Super.__init__(self)
+        thisYear = args[0].columns[0]
+        Super.__init__(self, thisYear)
         self.colName = config.ShareHolderName
         self.combinedDF = args[0]
         self.priceDF = args[1][0]
@@ -27,13 +28,13 @@ class Dividend(Super):
     def getDividendGrowthin5Years(self):
         latestYear = self.getDividend().get(self.latestYear)
         fourYearsAgo = self.getDividend().get(self.fourYearsAgo)
-        output = np.divide((latestYear-fourYearsAgo), fourYearsAgo)
+        output = self.divide((latestYear-fourYearsAgo), fourYearsAgo)
         return pd.Series([output], index=[self.latestYear])
 
     def getDividendGrowthin3Years(self):
         latestYear = self.getDividend().get(self.latestYear)
         twoYearsAgo = self.getDividend().get(self.twoYearsAgo)
-        output = np.divide((latestYear-twoYearsAgo), twoYearsAgo)
+        output = self.divide((latestYear-twoYearsAgo), twoYearsAgo)
         return pd.Series([output], index=[self.latestYear])
 
     def isDividendGrowthin3Years(self):
@@ -43,10 +44,10 @@ class Dividend(Super):
         return pd.Series([output], index=[self.latestYear])
 
     def getDividendYield(self):
-        return np.divide(self.getDividend(), self.getPrice())
+        return self.divide(self.getDividend(), self.getPrice())
 
     def getPayoutRatio(self):
-        return np.divide(self.getTotalDividend(), self.getNetIncome())
+        return self.divide(self.getTotalDividend(), self.getNetIncome())
 
     def setPayoutRatio(self):
         output = self.getPayoutRatio()

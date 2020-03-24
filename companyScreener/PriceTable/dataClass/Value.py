@@ -1,34 +1,37 @@
 import pandas as pd
-import numpy as np
 import config
 from ParsTable.dataClass.Super import Super
 
 
 class Value(Super):
     def __init__(self, *args):
-        Super.__init__(self)
+        thisYear = args[0].columns[0]
+        Super.__init__(self, thisYear)
         self.colName = config.ValueName
         self.combinedDF = args[0]
         self.priceDF = args[1][0]
         self.company = args[2]
 
     def getResearch(self):
-        return -self.getDFfilter("Research and Development Expenses")
+        return -self.getParsSeries("Research and Development Expenses")
 
     def getPRRatio(self):
-        return np.divide(self.getPrice()*self.getShares(), self.getResearch())
+        if (self.getResearch().sum() == 0):
+            return pd.Series([0.],  index=[self.latestYear])
+        else:
+            return self.divide(self.getPrice()*self.getShares(), self.getResearch())
 
     def getPSRatio(self):
-        return np.divide(self.getPrice()*self.getShares(), self.getRevenue())
+        return self.divide(self.getPrice()*self.getShares(), self.getRevenue())
 
     def getPERatio(self):
-        return np.divide(self.getPrice(), self.getEPS())
+        return self.divide(self.getPrice(), self.getEPS())
 
     def getPEGRatio(self):
-        return np.divide(self.getPERatio(), self.getOperatingIncomeGrowth())
+        return self.divide(self.getPERatio(), self.getEPSGrowth3YearAvg()*100)
 
     def getPBRatio(self):
-        return np.divide(self.getPrice()*self.getShares(), self.getStockholdersEquity())
+        return self.divide(self.getPrice()*self.getShares(), self.getStockholdersEquity())
 
     def setPBRatio(self):
         output = self.getPBRatio()
@@ -39,7 +42,7 @@ class Value(Super):
         self.setOutput(3, self.colName["PEGRatio"], output, self.latestYear)
 
     def setPERatio(self):
-        output = self.getPEGRatio()
+        output = self.getPERatio()
         self.setOutput(2, self.colName["PERatio"], output, self.latestYear)
 
     def setPSRatio(self):

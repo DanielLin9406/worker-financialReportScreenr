@@ -1,93 +1,122 @@
 import pandas as pd
 import numpy as np
+import time
+# np.seterr(divide='ignore', invalid='ignore')
 
 
 class Super:
-    def __init__(self):
-        self.latestYear = "2019"
-        self.lastYear = "2018"
-        self.twoYearsAgo = "2017"
-        self.threeYearsAgo = "2016"
-        self.fourYearsAgo = "2015"
+    def __init__(self, thisYear):
+        self.latestYear = str(int(thisYear))
+        self.lastYear = str(int(thisYear)-1)
+        self.twoYearsAgo = str(int(thisYear)-2)
+        self.threeYearsAgo = str(int(thisYear)-3)
+        self.fourYearsAgo = str(int(thisYear)-4)
         self.output = pd.DataFrame()
 
     def getOutput(self):
         return self.output
 
     def getTotalAssets(self):
-        return self.combinedDF.loc["Total Assets"]
+        return self.getParsSeries("Total Assets")
 
     def getTotalLiabilities(self):
-        return self.combinedDF.loc["Total Liabilities"]
+        return self.getParsSeries("Total Liabilities")
 
     def getRevenue(self):
-        return self.combinedDF.loc["Total Revenue"]
+        return self.getParsSeries("Total Revenue")
 
     def getCostofGoodsSold(self):
-        return -self.getDFfilter("Cost of Revenue")
+        return -self.getParsSeries("Cost of Revenue")
 
     def getOperatingCashFlow(self):
-        return self.combinedDF.loc["Cash Generated from Operating Activities"]
+        return self.getParsSeries("Cash Generated from Operating Activities")
 
     def getCapitalExpenditures(self):
-        if 'Capital Expenditure, Reported' in self.combinedDF.index:
-            return -self.combinedDF.loc["Capital Expenditure, Reported"]
-        else:
-            return -self.combinedDF.loc["Purchase/Sale and Disposal of Property, Plant and Equipment, Net"]
+        parNameList = ['Capital Expenditure, Reported',
+                       'Purchase/Sale and Disposal of Property, Plant and Equipment, Net']
+        return -self.getParsSeries(parNameList)
 
     def getCurrentLiabilities(self):
-        return self.combinedDF.loc["Total Current Liabilities"]
+        return self.getParsSeries("Total Current Liabilities")
 
     def getCurrentAssets(self):
-        return self.combinedDF.loc['Total Current Assets']
+        return self.getParsSeries('Total Current Assets')
 
     def getStockholdersEquity(self):
-        return self.combinedDF.loc["Total Equity"]
+        return self.getParsSeries("Total Equity")
 
     def getPrice(self):
-        return pd.Series(self.priceDF.loc[0, "close"], index=[self.latestYear, self.lastYear, self.twoYearsAgo, self.threeYearsAgo, self.fourYearsAgo], dtype="float")
+        return pd.Series([self.priceDF.iloc[0]], index=[self.latestYear], dtype="float")
 
     def getPretaxIncome(self):
-        return self.combinedDF.loc['Pretax Income']
+        return self.getParsSeries('Pretax Income')
 
     def getShares(self):
-        return self.combinedDF.loc['Common Shares Issued']
+        return self.getParsSeries('Common Shares Issued')
 
     def getNetIncome(self):
-        return self.combinedDF.loc['Net Income from Continuing Operations']
+        return self.getParsSeries('Net Income from Continuing Operations')
 
     def getOperatingIncome(self):
-        return self.combinedDF.loc['Total Operating Profit/Loss']
+        return self.getParsSeries('Total Operating Profit/Loss')
 
     def getTotalDividend(self):
-        return -self.combinedDF.loc['Cash Dividends Paid']
+        return -self.getParsSeries('Cash Dividends Paid')
 
     def getOperatingExpenses(self):
-        return -self.combinedDF.loc["Operating Income/Expenses"]
+        return -self.getParsSeries("Operating Income/Expenses")
+
+    def getDefaultSeries(self):
+        return pd.Series([0., 0., 0., 0., 0.], index=[self.latestYear, self.lastYear, self.twoYearsAgo, self.threeYearsAgo, self.fourYearsAgo], dtype="float")
+
+    def sum(self, SeriesList):
+        return np.sum(SeriesList, axis=0)
+        # .sort_index(ascending=False)
+
+    def divide(self, SerieA, SerieB):
+        # print(np.nonzero(SerieB.tolist()))
+        output = np.divide(SerieA, SerieB)
+        return output
+
+    def getParsSeries(self, parNamePool, alterNative=None):
+        def getSeriesFromDF(parName):
+            if parName in self.combinedDF.index:
+                return self.combinedDF.loc[parName]
+            elif alterNative is not None:
+                return alterNative()
+            else:
+                return self.getDefaultSeries()
+        if type(parNamePool) == list:
+            for parName in parNamePool:
+                return getSeriesFromDF(parName)
+        else:
+            return getSeriesFromDF(parNamePool)
 
     def getAssetTurnoverRatio(self):
-        return np.divide(self.getRevenue()*2, self.getTotalAssets().shift(periods=-1)+self.getTotalAssets())
-
-    def getDFfilter(self, parName):
-        if parName in self.combinedDF.index:
-            return self.combinedDF.loc[parName].fillna(0)
-        else:
-            return pd.Series([0., 0., 0., 0., 0., 0.], index=[self.latestYear, self.lastYear, self.twoYearsAgo, self.threeYearsAgo, self.fourYearsAgo, 'TTM'])
+        return self.divide(self.getRevenue()*2, self.getTotalAssets().shift(periods=-1)+self.getTotalAssets())
 
     def getChangeInWorkingCapital(self):
-        return np.divide(self.getCurrentLiabilities(), self.getCurrentAssets())
+        if (self.getCurrentLiabilities().sum() == 0 and self.getCurrentAssets().sum() == 0):
+            return self.getDefaultSeries()
+        else:
+            # print('Liabilities', self.getCurrentLiabilities())
+            # print('assets', self.getCurrentAssets())
+            return self.divide(self.getCurrentLiabilities(), self.getCurrentAssets())
 
     def getDividend(self):
-        return np.divide(self.getTotalDividend(), self.getShares()).dropna().sort_index(ascending=False)
+        # print(np.divide(self.getTotalDividend(), self.getShares()))
+        self.divide(self.getTotalDividend(), self.getShares())
+        # print(self.getShares())
+        return self.divide(self.getTotalDividend(), self.getShares()).sort_index(ascending=False)
 
     def getGrossMargin(self):
-        return np.divide(self.getRevenue()-self.getCostofGoodsSold(), self.getRevenue())
+        return self.divide(self.getRevenue()-self.getCostofGoodsSold(), self.getRevenue())
 
     def getFreeCashFlow(self):
         return self.getOperatingCashFlow() - self.getCapitalExpenditures()
 
     def getEPS(self):
-        return np.divide(self.getNetIncome(), self.getShares())
+        return self.divide(self.getNetIncome(), self.getShares())
 
     def getEBIT(self):
         return self.getRevenue()-self.getFreeCashFlow()-self.getOperatingExpenses()
@@ -97,15 +126,18 @@ class Super:
         lastYear = self.getOperatingIncome().get(self.lastYear)
         twoYearsAgo = self.getOperatingIncome().get(self.twoYearsAgo)
         threeYearsAgo = self.getOperatingIncome().get(self.threeYearsAgo)
-        output1 = np.divide((latestYear-lastYear), lastYear)
-        output2 = np.divide((lastYear-twoYearsAgo), twoYearsAgo)
-        output3 = np.divide((twoYearsAgo-threeYearsAgo), threeYearsAgo)
+        output1 = self.divide((latestYear-lastYear), lastYear)
+        output2 = self.divide((lastYear-twoYearsAgo), twoYearsAgo)
+        output3 = self.divide((twoYearsAgo-threeYearsAgo), threeYearsAgo)
         return pd.Series([output1, output2, output3], index=[self.latestYear, self.lastYear, self.twoYearsAgo])
+
+    def getEPSGrowth3YearAvg(self):
+        return np.power(self.divide(self.getEPS(), self.getEPS().shift(periods=-3)), (np.divide(1, 3)))-1
 
     def getEPSGrowth(self):
         latestYear = self.getEPS().get(self.latestYear)
         lastYear = self.getEPS().get(self.lastYear)
-        output = np.divide((latestYear-lastYear), lastYear)
+        output = self.divide((latestYear-lastYear), lastYear)
         return pd.Series([output], index=[self.latestYear])
 
     def setOutput(self, columnIndex, columnHead, column, year):
