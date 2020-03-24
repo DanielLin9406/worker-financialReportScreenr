@@ -32,7 +32,7 @@ def getValueListFromDF(df, sheetName, company):
 
 def getRangeOfList(sheetName, idNum):
     if 'Pars' in sheetName:
-        return ''.join(['F', str(idNum), ':', 'BF', str(idNum)])
+        return ''.join(['F', str(idNum), ':', 'BM', str(idNum)])
     elif 'Analysis' in sheetName:
         return ''.join(['C', str(idNum), ':', 'AW', str(idNum)])
     elif 'Price' in sheetName:
@@ -42,7 +42,7 @@ def getRangeOfList(sheetName, idNum):
 def getFormatedOfCell(sheetName, idNum):
     if 'Pars' in sheetName:
         data = {
-            "range": "".join(["F", str(idNum), ":BF", str(idNum)]),
+            "range": "".join(["F", str(idNum), ":BM", str(idNum)]),
             "formated": {
                 "horizontalAlignment": "CENTER"
             }

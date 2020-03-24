@@ -28,6 +28,9 @@ class Super:
     def getCostofGoodsSold(self):
         return -self.getParsSeries("Cost of Revenue")
 
+    def getResearch(self):
+        return -self.getParsSeries("Research and Development Expenses")
+
     def getOperatingCashFlow(self):
         return self.getParsSeries("Cash Generated from Operating Activities")
 

@@ -12,9 +12,6 @@ class Value(Super):
         self.priceDF = args[1][0]
         self.company = args[2]
 
-    def getResearch(self):
-        return -self.getParsSeries("Research and Development Expenses")
-
     def getPRRatio(self):
         if (self.getResearch().sum() == 0):
             return pd.Series([0.],  index=[self.latestYear])

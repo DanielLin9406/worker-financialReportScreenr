@@ -24,6 +24,7 @@ ProfitName = dict(
     maxROEinFouryears="Max ROE in 4 years",
     minROEinFouryears="Min ROE in 4 years",
     ROA="ROA",
+    ROS="ROS",
     # grossMargin="Gross Margin",
     operatingMargin="Operating Margin",
     operatingCashFlow="Operating Cash Flow",
@@ -42,6 +43,8 @@ GrowthName = dict(
     assetTurnoverRatio="Asset Turnover Ratio",
     assetTurnoverRation1="Asset Turnover Ratio(n-1)",
     reinvestmentRate="Reinvestment Rate",
+    research="R&D Expense",
+    researchn1="R&D Expense(n-1)",
     operatingIncomeGrowth="Operating Income Growth",
     operatingIncomeGrowthn1="Operating Income Growth(n-1)",
     operatingIncomeGrowthn2="Operating Income Growth(n-2)",
@@ -53,6 +56,10 @@ GrowthName = dict(
 )
 
 SafetyName = dict(
+    totalAssets="Total Assets",
+    totalAssetsn1="Total Assets (n-1)",
+    totalLiabilities="Total Liabilities",
+    totalLiabilitiesn1="Total Liabilities (n-1)",
     longTermDebt="Long-Term Debt",
     longTermDebtn1="Long-Term Debt(n-1)",
     currentRatio="Current Ratio",
@@ -147,7 +154,10 @@ criteria = dict(
             "name": "payoutRatio<80%",
             "mode": ["growthInvestment"],
             "data":  [{"name": thisModule.ShareHolderName["payoutRatio"],
-                       "criteria": 0.8, "operator":["lt"]}],
+                       "criteria": 0.8, "operator":["lt"]},
+                      {"name": thisModule.ShareHolderName["payoutRatio"],
+                       "criteria": 0, "operator":["gt"]}
+                      ],
         }, {
             "name": "dividendGrowthinThreeYear=True%",
             "mode": ["valueInvestment"],

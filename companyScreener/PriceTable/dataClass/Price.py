@@ -71,7 +71,7 @@ class Price(Super):
         return self.divide(self.getFCFF().get(self.latestYear)*(1+self.getInfiniteGrowthRateFCFF().get(self.latestYear)), self.getCostOfCapital().get(self.latestYear)-self.getInfiniteGrowthRateFCFF().get(self.latestYear))
 
     def getNPVofTerminalValueFCFE(self):
-        print(self.getFCFE())
+        # print(self.getFCFE())
         return self.divide(self.getFCFE().get(self.latestYear)*(1+self.getInfiniteGrowthRateFCFE().get(self.latestYear)), self.getCostofEquity().get(self.latestYear)-self.getInfiniteGrowthRateFCFE().get(self.latestYear))
 
     def getEnterpriceValueFCFF(self):

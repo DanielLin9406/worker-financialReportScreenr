@@ -69,46 +69,60 @@ class Safety(Super):
     def setSharesCapital(self):
         output = self.getSharesCapital()
         self.setOutput(
-            11, self.colName["shareCapital"], output, self.latestYear)
+            14, self.colName["shareCapital"], output, self.latestYear)
         self.setOutput(
-            12, self.colName["shareCapitaln1"], output, self.lastYear)
+            15, self.colName["shareCapitaln1"], output, self.lastYear)
 
     def setTotalDividendsFCFRatio(self):
         output = self.getTotalDividendsFCFRatio()
         self.setOutput(
-            10, self.colName["totalDividendsFCFRatio"], output, self.latestYear)
+            13, self.colName["totalDividendsFCFRatio"], output, self.latestYear)
 
     def setDebtAssetsRatio(self):
         output = self.getDebtAssetsRatio()
         self.setOutput(
-            9, self.colName["debtAssetRatio"], output, self.latestYear)
+            12, self.colName["debtAssetRatio"], output, self.latestYear)
 
     def setDebtCapitalRatio(self):
         output = self.getDebtCapitalRatio()
         self.setOutput(
-            8, self.colName["debtCapitalRatio"], output, self.latestYear)
+            11, self.colName["debtCapitalRatio"], output, self.latestYear)
 
     def setDebtEquityRatio(self):
         output = self.getDebtEquityRatio()
         self.setOutput(
-            7, self.colName["debtEquityRatio"], output, self.latestYear)
+            10, self.colName["debtEquityRatio"], output, self.latestYear)
 
     def setQuickRatio(self):
         output = self.getQuickRatio()
-        self.setOutput(5, self.colName["quickRatio"], output, self.latestYear)
+        self.setOutput(8, self.colName["quickRatio"], output, self.latestYear)
         self.setOutput(
-            6, self.colName["quickRation1"], output, self.lastYear)
+            9, self.colName["quickRation1"], output, self.lastYear)
 
     def setCurrentRatio(self):
         output = self.getCurrentRatio()
         self.setOutput(
-            3, self.colName["currentRatio"], output, self.latestYear)
+            6, self.colName["currentRatio"], output, self.latestYear)
         self.setOutput(
-            4, self.colName["currentRation1"], output, self.lastYear)
+            7, self.colName["currentRation1"], output, self.lastYear)
 
     def setLongTermDebt(self):
         output = self.getLongTermDebt()
         self.setOutput(
-            0, self.colName["longTermDebt"], output, self.latestYear)
+            4, self.colName["longTermDebt"], output, self.latestYear)
         self.setOutput(
-            1, self.colName["longTermDebtn1"], output, self.lastYear)
+            5, self.colName["longTermDebtn1"], output, self.lastYear)
+
+    def setTotalLiabilities(self):
+        output = self.getTotalLiabilities()
+        self.setOutput(
+            2, self.colName["totalLiabilities"], output, self.latestYear)
+        self.setOutput(
+            3, self.colName["totalLiabilitiesn1"], output, self.lastYear)
+
+    def setTotalAssests(self):
+        output = self.getTotalAssests()
+        self.setOutput(
+            0, self.colName["totalAssets"], output, self.latestYear)
+        self.setOutput(
+            1, self.colName["totalAssetsn1"], output, self.lastYear)

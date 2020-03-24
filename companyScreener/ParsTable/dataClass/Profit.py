@@ -21,6 +21,9 @@ class Profit(Super):
     def getFinancialLeverage(self):
         return self.divide(self.getTotalAssets(), self.getStockholdersEquity())
 
+    def getROS(self):
+        return self.divide(self.getNetIncome(), self.getRevenue())
+
     def getROA(self):
         return self.getNetIncomeMargin()*self.getAssetTurnoverRatio()
 
@@ -69,6 +72,9 @@ class Profit(Super):
     # def setGrossMargin(self):
     #     output = self.getGrossMargin()
     #     self.setOutput(9, self.colName["grossMargin"], output, self.latestYear)
+    def setROS(self):
+        output = self.getROS()
+        self.setOutput(9, self.colName["ROS"], output, self.latestYear)
 
     def setROA(self):
         output = self.getROA()

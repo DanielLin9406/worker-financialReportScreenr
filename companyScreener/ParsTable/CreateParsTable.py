@@ -28,6 +28,7 @@ def createProfitDF(combinedDF, priceDFList, company):
     profitInstance.setMaxROEin4Years()
     profitInstance.setMinROEin4Years()
     profitInstance.setROA()
+    profitInstance.setROS()
     # profitInstance.setGrossMargin()
     profitInstance.setOperatingMarin()
     profitInstance.setOperatingCashFlow()
@@ -43,6 +44,7 @@ def createGrowthDF(combinedDF, priceDFList, company):
     growthInstance.setGrossMargin()
     growthInstance.setAssetTurnoverRatio()
     growthInstance.setReinvestmentRate()
+    growthInstance.setResearch()
     growthInstance.setOperatingIncomeGrowth()
     growthInstance.setRevenueGrowth()
     growthInstance.setEPSGrowth()
@@ -52,6 +54,8 @@ def createGrowthDF(combinedDF, priceDFList, company):
 
 def createSafetyDF(combinedDF, priceDFList, company):
     safetyInstance = Safety(combinedDF, priceDFList, company)
+    safetyInstance.setTotalAssests()
+    safetyInstance.setTotalLiabilities()
     safetyInstance.setLongTermDebt()
     safetyInstance.setCurrentRatio()
     safetyInstance.setQuickRatio()

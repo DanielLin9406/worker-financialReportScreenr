@@ -37,30 +37,37 @@ class Growth(Super):
     def setEPSGrowth3YearAvg(self):
         output = self.getEPSGrowth3YearAvg()
         self.setOutput(
-            14, self.colName["EPSGrowth3YearAvg"], output, self.latestYear)
+            16, self.colName["EPSGrowth3YearAvg"], output, self.latestYear)
 
     def setEPSGrowth(self):
         output = self.getEPSGrowth()
         self.setOutput(
-            13, self.colName["EPSGrowth"], output, self.latestYear)
+            15, self.colName["EPSGrowth"], output, self.latestYear)
 
     def setRevenueGrowth(self):
         output = self.getRevenueGrowth()
         self.setOutput(
-            10, self.colName["revenueGrowth"], output, self.latestYear)
+            12, self.colName["revenueGrowth"], output, self.latestYear)
         self.setOutput(
-            11, self.colName["revenueGrowthn1"], output, self.lastYear)
+            13, self.colName["revenueGrowthn1"], output, self.lastYear)
         self.setOutput(
-            12, self.colName["revenueGrowthn2"], output, self.twoYearsAgo)
+            14, self.colName["revenueGrowthn2"], output, self.twoYearsAgo)
 
     def setOperatingIncomeGrowth(self):
         output = self.getOperatingIncomeGrowth()
         self.setOutput(
-            7, self.colName["operatingIncomeGrowth"], output, self.latestYear)
+            9, self.colName["operatingIncomeGrowth"], output, self.latestYear)
         self.setOutput(
-            8, self.colName["operatingIncomeGrowthn1"], output, self.lastYear)
+            10, self.colName["operatingIncomeGrowthn1"], output, self.lastYear)
         self.setOutput(
-            9, self.colName["operatingIncomeGrowthn2"], output, self.twoYearsAgo)
+            11, self.colName["operatingIncomeGrowthn2"], output, self.twoYearsAgo)
+
+    def setResearch(self):
+        output = self.getResearch()
+        self.setOutput(
+            7, self.colName["research"], output, self.latestYear)
+        self.setOutput(
+            8, self.colName["researchn1"], output, self.lastYear)
 
     def setReinvestmentRate(self):
         output = self.getReinvestmentRate()
