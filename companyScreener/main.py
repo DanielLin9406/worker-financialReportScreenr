@@ -6,19 +6,20 @@ from ParsTable.CreateParsTable import createParsTable
 from PriceTable.CreatePriceTable import createPriceTable
 from CriteriaTable.CreateCriteriaTable import analyzeData
 from GoogleSheetAPI.upload2GoogleSheet import upload2Sheet
-from worker import getStockPrice, getTreasuriesYield, cleanDataWorker
+from worker import getStockPrice, getTreasuriesYield, cleanDataWorker, getRevenueEstimate
 
 
 def mainProcess(dir, company, idNum):
     print('Start to Process data of', company)
     formatedCombinedDF = cleanDataWorker(dir)
     priceDF = getStockPrice(company)
+    revenueEstimateDF = getRevenueEstimate(company)
     treasuriesYieldDF = getTreasuriesYield()
 
     parasTable = createParsTable(
         formatedCombinedDF, [priceDF], company)
     priceTable = createPriceTable(
-        formatedCombinedDF, [priceDF, treasuriesYieldDF], company)
+        formatedCombinedDF, [priceDF, treasuriesYieldDF, revenueEstimateDF], company)
     analyzedTable = analyzeData(parasTable, company)
 
     # TODO

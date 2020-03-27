@@ -15,12 +15,6 @@ class Profit(Super):
     def getOperatingMarin(self):
         return self.divide(self.getOperatingIncome(), self.getRevenue())
 
-    def getNetIncomeMargin(self):
-        return self.divide(self.getNetIncome(), self.getRevenue())
-
-    def getFinancialLeverage(self):
-        return self.divide(self.getTotalAssets(), self.getStockholdersEquity())
-
     def getROS(self):
         return self.divide(self.getNetIncome(), self.getRevenue())
 

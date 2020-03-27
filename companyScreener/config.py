@@ -83,12 +83,18 @@ PriceName = dict(
     dividendAfterNYears="Dividend after N years",
     treasuriesYield="Treasuries Yield",
     stockPrice="Stock Price",
+    CPriceDDM="Cheap present value (DDM)",
+    RPriceDDM="Net present value (DDM)",
+    EPriceDDM="Expensive present value (DDM)",
     CPriceDDM2="Cheap present value (DDM-2)",
     RPriceDDM2="Net present value (DDM-2)",
     EPriceDDM2="Expensive present value (DDM-2)",
     CPriceDDMH="Cheap present value (DDM-H)",
     RPriceDDMH="Net present value (DDM-H)",
     EPriceDDMH="Expensive present value (DDM-H)",
+    CPriceDCF="Cheap present value (DCF)",
+    RPriceDCF="Net present value (DCF)",
+    EPriceDCF="Expensive present value (DCF)",
     CBenjaminGraham="Cheap Benjamin Graham Price",
     RBenjaminGraham="Benjamin Graham Price",
     EBenjaminGraham="Expensive Benjamin Graham Price",
@@ -118,11 +124,21 @@ ValueName = dict(
     PEG="PEG",
 )
 
-DDM = dict(
-    highGrowthPeriod=10,
+DDM2 = dict(
+    highGrowthPeriod=15,
     yieldGrowthRate=0.129,
-    terminalYieldGrowth=0.02,
-    discountRate=0.09
+    terminalYieldGrowth=0.025,
+    discountRate=0.07
+)
+
+DDM = dict(
+    # infiniteGrowthRate=0.0976,
+    discountRate=0.1312  # From WACC
+)
+
+DCF = dict(
+    discountRate=0.07,  # From WACC
+    perpetualGrowthRate=0.02
 )
 
 FCFF = dict(
@@ -132,8 +148,7 @@ FCFF = dict(
 )
 
 FCFE = dict(
-    costOfEquity=0.12,
-    infiniteGrowthRate=0.03
+    costOfEquity=0.1312,
 )
 
 marginOfSafety = 0.8
@@ -331,7 +346,7 @@ criteria = dict(
             "name": "Operating Income Growth % > 0",
             "mode": ["valueInvestment"],
             "data": [{"name": thisModule.GrowthName["reinvestmentRate"],
-                      "criteria": 0, "operator":["lt"]}],
+                      "criteria": 0, "operator":["gt"]}],
         },
         {
             "name": "Operating Income Growth % > 10%",

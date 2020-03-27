@@ -44,6 +44,9 @@ class Dividend(Super):
         return pd.Series([output], index=[self.latestYear])
 
     def getDividendYield(self):
+        # print('TotalDividend', self.getTotalDividend())
+        # print('shares', self.getShares())
+        # print('Dividend', self.getDividend())
         return self.divide(self.getDividend(), self.getPrice())
 
     def getPayoutRatio(self):

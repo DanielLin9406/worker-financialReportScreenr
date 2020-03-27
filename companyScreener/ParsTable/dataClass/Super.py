@@ -82,18 +82,36 @@ class Super:
         return output
 
     def getParsSeries(self, parNamePool, alterNative=None):
+        def checkSeriesInDF(parName):
+            return parName in self.combinedDF.index
+
         def getSeriesFromDF(parName):
             if parName in self.combinedDF.index:
                 return self.combinedDF.loc[parName]
-            elif alterNative is not None:
+
+        def getSeriesFromPlanB(alterNative):
+            if alterNative is not None:
                 return alterNative()
             else:
                 return self.getDefaultSeries()
+
         if type(parNamePool) == list:
-            for parName in parNamePool:
-                return getSeriesFromDF(parName)
+            while(len(parNamePool) > 0):
+                parName = parNamePool.pop(0)
+                if checkSeriesInDF(parName) == True:
+                    return getSeriesFromDF(parName)
+            return getSeriesFromPlanB(alterNative)
         else:
-            return getSeriesFromDF(parNamePool)
+            if checkSeriesInDF(parNamePool) == True:
+                return getSeriesFromDF(parNamePool)
+            else:
+                return getSeriesFromPlanB(alterNative)
+
+    def getNetIncomeMargin(self):
+        return self.divide(self.getNetIncome(), self.getRevenue())
+
+    def getFinancialLeverage(self):
+        return self.divide(self.getTotalAssets(), self.getStockholdersEquity())
 
     def getAssetTurnoverRatio(self):
         return self.divide(self.getRevenue()*2, self.getTotalAssets().shift(periods=-1)+self.getTotalAssets())
