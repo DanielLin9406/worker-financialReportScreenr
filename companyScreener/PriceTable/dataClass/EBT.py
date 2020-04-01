@@ -11,14 +11,14 @@ class EBT(Price):
     def getEBT(self):
         return self.divide(self.getPretaxIncome(), self.getShares())
 
-    def getEBTPriceRatio(self):
+    def getStockPrice(self):
         return self.divide(self.getEBT(), 0.04)
 
-    def setEBTPriceRatio(self):
-        output = self.getEBTPriceRatio()
+    def setStockPrice(self):
+        output = self.getStockPrice()
         self.setOutput(
             0, self.colName["CEBTRatio"], output, self.latestYear)
         self.setOutput(
-            1, self.colName["REBTRatio"], output, self.latestYear)
+            0, self.colName["REBTRatio"], output, self.latestYear)
         self.setOutput(
-            2, self.colName["EEBTRatio"], output, self.latestYear)
+            0, self.colName["EEBTRatio"], output, self.latestYear)

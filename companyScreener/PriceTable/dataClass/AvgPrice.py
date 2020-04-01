@@ -1,44 +1,139 @@
 import pandas as pd
 import numpy as np
 import config
-from PriceTable.dataClass.DDM import DDM
-from PriceTable.dataClass.DDM2 import DDM2
-from PriceTable.dataClass.DCF import DCF
-from PriceTable.dataClass.DDMH import DDMH
-from PriceTable.dataClass.EBT import EBT
-from PriceTable.dataClass.FCFF import FCFF
-from PriceTable.dataClass.FCFE import FCFE
-from PriceTable.dataClass.Graham import Graham
+from ParsTable.dataClass.Super import Super
 
 
-class AvgPrice(DDM, DDM2, DDMH, DCF, EBT, FCFF, FCFE, Graham):
+class AvgPrice(Super):
     def __init__(self, *args):
-        super().__init__(*args)
+        thisYear = args[0].columns[0]
+        super().__init__(thisYear)
+        self.colName = config.PriceName
+        self.priceDF = args[1][0]
+        self.valueInvesementInstanceList = args[2]['valueInvesement']
+        self.valueInvesementInstanceList2 = args[2]['valueInvesement2']
+        self.growthInvesementInstanceList = args[2]['growthInvesement']
+        self.growthInvesementInstanceList2 = args[2]['growthInvesement2']
+        self.company = args[3]
 
-    def getAVGPriceofGrowthInvesement(self):
-        output = np.average(
-            [self.getStockPriceFCFE().get(self.latestYear), self.getEBTPriceRatio().get(self.latestYear)])
+    def getDiscountPremium(self, currentPrice, estimatePrice):
+        output = self.divide(currentPrice-estimatePrice, estimatePrice)
+        if np.isnan(output):
+            output = 0
         return pd.Series([output], index=[self.latestYear])
 
+    def getDiscountPremiumOfEBT(self):
+        currentPrice = self.getPrice().get(self.latestYear)
+        estimatePrice = self.valueInvesementInstanceList2['EBT'].getStockPrice(
+        ).get(self.latestYear)
+        return self.getDiscountPremium(currentPrice, estimatePrice)
+
+    def getDiscountPremiumOfGraham(self):
+        currentPrice = self.getPrice().get(self.latestYear)
+        estimatePrice = self.valueInvesementInstanceList2['Graham'].getStockPrice(
+        ).get(self.latestYear)
+        return self.getDiscountPremium(currentPrice, estimatePrice)
+
+    def getDiscountPremiumOfDCF(self):
+        currentPrice = self.getPrice().get(self.latestYear)
+        estimatePrice = self.valueInvesementInstanceList2['DCF'].getStockPrice(
+        ).get(self.latestYear)
+        return self.getDiscountPremium(currentPrice, estimatePrice)
+
+    def getDiscountPremiumOfFCFE(self):
+        currentPrice = self.getPrice().get(self.latestYear)
+        estimatePrice = self.valueInvesementInstanceList2['FCFE'].getStockPrice(
+        ).get(self.latestYear)
+        return self.getDiscountPremium(currentPrice, estimatePrice)
+
+    def getDiscountPremiumOfDDMH(self):
+        currentPrice = self.getPrice().get(self.latestYear)
+        estimatePrice = self.valueInvesementInstanceList2['DDMH'].getStockPrice(
+        ).get(self.latestYear)
+        return self.getDiscountPremium(currentPrice, estimatePrice)
+
+    def getDiscountPremiumOfDDM2(self):
+        currentPrice = self.getPrice().get(self.latestYear)
+        estimatePrice = self.valueInvesementInstanceList2['DDM2'].getStockPrice(
+        ).get(self.latestYear)
+        return self.getDiscountPremium(currentPrice, estimatePrice)
+
+    def getDiscountPremiumOfDDM(self):
+        currentPrice = self.getPrice().get(self.latestYear)
+        estimatePrice = self.valueInvesementInstanceList2['DDM'].getStockPrice(
+        ).get(self.latestYear)
+        return self.getDiscountPremium(currentPrice, estimatePrice)
+
+    def setDiscountPremiumOfEBT(self):
+        output = self.getDiscountPremiumOfEBT()
+        print(output)
+        return self.setOutput(
+            0, self.colName["DiscountPremiumOfEBT"], output, self.latestYear)
+
+    def setDiscountPremiumOfGraham(self):
+        output = self.getDiscountPremiumOfGraham()
+        print(output)
+        return self.setOutput(
+            0, self.colName["DiscountPremiumOfGraham"], output, self.latestYear)
+
+    def setDiscountPremiumOfDCF(self):
+        output = self.getDiscountPremiumOfDCF()
+        print(output)
+        return self.setOutput(
+            0, self.colName["DiscountPremiumOfDCF"], output, self.latestYear)
+
+    def setDiscountPremiumOfFCFE(self):
+        output = self.getDiscountPremiumOfFCFE()
+        print(output)
+        return self.setOutput(
+            0, self.colName["DiscountPremiumOfFCFE"], output, self.latestYear)
+
+    def setDiscountPremiumOfDDMH(self):
+        output = self.getDiscountPremiumOfDDMH()
+        print(output)
+        return self.setOutput(
+            0, self.colName["DiscountPremiumOfDDMH"], output, self.latestYear)
+
+    def setDiscountPremiumOfDDM2(self):
+        output = self.getDiscountPremiumOfDDM2()
+        print(output)
+        return self.setOutput(
+            0, self.colName["DiscountPremiumOfDDM2"], output, self.latestYear)
+
+    def setDiscountPremiumOfDDM(self):
+        output = self.getDiscountPremiumOfDDM()
+        print(output)
+        return self.setOutput(
+            0, self.colName["DiscountPremiumOfDDM"], output, self.latestYear)
+
     def getAVGPriceofValueInvesement(self):
-        output = np.average([self.getStockPriceDDM2().get(self.latestYear), self.getStockPriceDDM().get(self.latestYear), self.getStockPriceDDMH(
-        ).get(self.latestYear), self.getStockPriceFCFE().get(self.latestYear), self.getBenjaminGrahamPrice().get(self.latestYear), self.getEBTPriceRatio().get(self.latestYear)])
+        output = np.nanmean([ele.getStockPrice().get(
+            self.latestYear) for key, ele in self.valueInvesementInstanceList2.items()])
+        # output = np.nanmean([ele.getStockPrice().get(
+        #     self.latestYear) for ele in self.valueInvesementInstanceList])
+        return pd.Series([output], index=[self.latestYear])
+
+    def getAVGPriceofGrowthInvesement(self):
+        output = np.nanmean([ele.getStockPrice().get(
+            self.latestYear) for key, ele in self.growthInvesementInstanceList2.items()])
+        # output = np.nanmean([ele.getStockPrice().get(self.latestYear)
+        #                      for ele in self.growthInvesementInstanceList])
         return pd.Series([output], index=[self.latestYear])
 
     def setAVGPriceofGrowthInvesement(self):
         output = self.getAVGPriceofGrowthInvesement()
         self.setOutput(
-            29, self.colName["CAvgPriceofGrowthInvestment"], output, self.latestYear)
+            0, self.colName["CAvgPriceofGrowthInvestment"], output, self.latestYear)
         self.setOutput(
-            30, self.colName["RAvgPriceofGrowthInvestment"], output, self.latestYear)
+            0, self.colName["RAvgPriceofGrowthInvestment"], output, self.latestYear)
         self.setOutput(
-            31, self.colName["EAvgPriceofGrowthInvestment"], output, self.latestYear)
+            0, self.colName["EAvgPriceofGrowthInvestment"], output, self.latestYear)
 
     def setAVGPriceofValueInvesement(self):
         output = self.getAVGPriceofValueInvesement()
         self.setOutput(
-            26, self.colName["CAvgPriceofValueInvestment"], output, self.latestYear)
+            0, self.colName["CAvgPriceofValueInvestment"], output, self.latestYear)
         self.setOutput(
-            27, self.colName["RAvgPriceofValueInvestment"], output, self.latestYear)
+            0, self.colName["RAvgPriceofValueInvestment"], output, self.latestYear)
         self.setOutput(
-            28, self.colName["EAvgPriceofValueInvestment"], output, self.latestYear)
+            0, self.colName["EAvgPriceofValueInvestment"], output, self.latestYear)

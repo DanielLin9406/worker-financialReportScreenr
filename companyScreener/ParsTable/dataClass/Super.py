@@ -125,9 +125,6 @@ class Super:
             return self.divide(self.getCurrentLiabilities(), self.getCurrentAssets())
 
     def getDividend(self):
-        # print(np.divide(self.getTotalDividend(), self.getShares()))
-        self.divide(self.getTotalDividend(), self.getShares())
-        # print(self.getShares())
         return self.divide(self.getTotalDividend(), self.getShares()).sort_index(ascending=False)
 
     def getGrossMargin(self):
@@ -164,4 +161,4 @@ class Super:
     def setOutput(self, columnIndex, columnHead, column, year):
         self.output = self.output.rename(columns={columnIndex: columnHead})
         self.output.at[self.company,
-                       columnHead] = column[year]
+                       columnHead] = 0 if pd.isnull(column[year]) else column[year]

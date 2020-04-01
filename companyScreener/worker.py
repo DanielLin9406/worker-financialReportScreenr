@@ -127,7 +127,6 @@ def getRevenueEstimate(company, fileName='revenueEstimate.csv'):
             forcast2YearDF = pd.DataFrame(
                 forcast2Year).loc['raw'].rename('2 Year')
             DF = pd.concat([forcast1YearDF, forcast2YearDF], axis=1)
-            # print('DF', DF)
             NewDF = DF.loc[['low', 'growth']].rename(
                 {'low': parName1, 'growth': parName2}, axis='index')
             return saveDFtoFile(NewDF, [parName1, parName2], fileName)

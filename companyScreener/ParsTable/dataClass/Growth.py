@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import config
 from ParsTable.dataClass.Super import Super
 
@@ -34,59 +35,93 @@ class Growth(Super):
         output3 = self.divide((twoYearsAgo-threeYearsAgo), threeYearsAgo)
         return pd.Series([output1, output2, output3], index=[self.latestYear, self.lastYear, self.twoYearsAgo])
 
+    def getOperatingIncomeAccelerateGrowth(self):
+        latestYearGrowthRate = self.getOperatingIncomeGrowth().get(self.latestYear)
+        twoYearsAgoGrowthRate = self.getOperatingIncomeGrowth().get(self.twoYearsAgo)
+        output = self.divide(
+            (latestYearGrowthRate-twoYearsAgoGrowthRate), twoYearsAgoGrowthRate)
+        return pd.Series([output], index=[self.latestYear])
+
+    def getYearPercentageOfOperatingIncomeGrowth(self):
+        output = self.divide(
+            np.sum(self.getOperatingIncomeGrowth().dropna().gt(0.15)),
+            len(self.getOperatingIncomeGrowth().dropna()))
+        return pd.Series([output], index=[self.latestYear])
+
+    def getYearPercentageOfRevenueGrowth(self):
+        output = self.divide(
+            np.sum(self.getRevenueGrowth().dropna().gt(0)),
+            len(self.getRevenueGrowth().dropna()))
+        return pd.Series([output], index=[self.latestYear])
+
     def setEPSGrowth3YearAvg(self):
         output = self.getEPSGrowth3YearAvg()
         self.setOutput(
-            16, self.colName["EPSGrowth3YearAvg"], output, self.latestYear)
+            0, self.colName["EPSGrowth3YearAvg"], output, self.latestYear)
 
     def setEPSGrowth(self):
         output = self.getEPSGrowth()
         self.setOutput(
-            15, self.colName["EPSGrowth"], output, self.latestYear)
+            0, self.colName["EPSGrowth"], output, self.latestYear)
+
+    def setYearPercentageOfRevenueGrowth(self):
+        output = self.getYearPercentageOfRevenueGrowth()
+        self.setOutput(
+            0, self.colName["yearPercentageOfRevenueGrowth"], output, self.latestYear)
 
     def setRevenueGrowth(self):
         output = self.getRevenueGrowth()
         self.setOutput(
-            12, self.colName["revenueGrowth"], output, self.latestYear)
+            0, self.colName["revenueGrowth"], output, self.latestYear)
         self.setOutput(
-            13, self.colName["revenueGrowthn1"], output, self.lastYear)
+            0, self.colName["revenueGrowthn1"], output, self.lastYear)
         self.setOutput(
-            14, self.colName["revenueGrowthn2"], output, self.twoYearsAgo)
+            0, self.colName["revenueGrowthn2"], output, self.twoYearsAgo)
+
+    def setYearPercentageOfOperatingIncomeGrowth(self):
+        output = self.getYearPercentageOfOperatingIncomeGrowth()
+        self.setOutput(
+            0, self.colName["yearPercentageOfOperatingIncomeGrowth"], output, self.latestYear)
+
+    def setOperatingIncomeAccelerateGrowth(self):
+        output = self.getOperatingIncomeAccelerateGrowth()
+        self.setOutput(
+            0, self.colName["operatingIncomeAccelerateGrowth"], output, self.latestYear)
 
     def setOperatingIncomeGrowth(self):
         output = self.getOperatingIncomeGrowth()
         self.setOutput(
-            9, self.colName["operatingIncomeGrowth"], output, self.latestYear)
+            0, self.colName["operatingIncomeGrowth"], output, self.latestYear)
         self.setOutput(
-            10, self.colName["operatingIncomeGrowthn1"], output, self.lastYear)
+            0, self.colName["operatingIncomeGrowthn1"], output, self.lastYear)
         self.setOutput(
-            11, self.colName["operatingIncomeGrowthn2"], output, self.twoYearsAgo)
+            0, self.colName["operatingIncomeGrowthn2"], output, self.twoYearsAgo)
 
     def setResearch(self):
         output = self.getResearch()
         self.setOutput(
-            7, self.colName["research"], output, self.latestYear)
+            0, self.colName["research"], output, self.latestYear)
         self.setOutput(
-            8, self.colName["researchn1"], output, self.lastYear)
+            0, self.colName["researchn1"], output, self.lastYear)
 
     def setReinvestmentRate(self):
         output = self.getReinvestmentRate()
         self.setOutput(
-            6, self.colName["reinvestmentRate"], output, self.latestYear)
+            0, self.colName["reinvestmentRate"], output, self.latestYear)
 
     def setAssetTurnoverRatio(self):
         output = self.getAssetTurnoverRatio()
         self.setOutput(
-            4, self.colName["assetTurnoverRatio"], output, self.latestYear)
+            0, self.colName["assetTurnoverRatio"], output, self.latestYear)
         self.setOutput(
-            5, self.colName["assetTurnoverRation1"], output, self.lastYear)
+            0, self.colName["assetTurnoverRation1"], output, self.lastYear)
 
     def setGrossMargin(self):
         output = self.getGrossMargin()
-        self.setOutput(2, self.colName["grossMargin"], output, self.latestYear)
-        self.setOutput(3, self.colName["grossMarginn1"], output, self.lastYear)
+        self.setOutput(0, self.colName["grossMargin"], output, self.latestYear)
+        self.setOutput(0, self.colName["grossMarginn1"], output, self.lastYear)
 
     def setROTA(self):
         output = self.getROTA()
         self.setOutput(0, self.colName["ROTA"], output, self.latestYear)
-        self.setOutput(1, self.colName["ROTAn1"], output, self.lastYear)
+        self.setOutput(0, self.colName["ROTAn1"], output, self.lastYear)

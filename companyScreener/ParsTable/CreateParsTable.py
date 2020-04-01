@@ -3,17 +3,24 @@ from ParsTable.dataClass.Dividend import Dividend
 from ParsTable.dataClass.Profit import Profit
 from ParsTable.dataClass.Growth import Growth
 from ParsTable.dataClass.Safety import Safety
+from ParsTable.dataClass.Industry import Industry
+
+
+def createIndustryInfo(combinedDF, priceDFList, company):
+    industryInstance = Industry(combinedDF, priceDFList, company)
+    industryInstance.setMarketCapitalization()
+    return industryInstance.getOutput()
 
 
 def createDividendDF(combinedDF, priceDFList, company):
     dividendInstance = Dividend(
         combinedDF, priceDFList, company)
     dividendInstance.setDividend()
+    dividendInstance.setDividendGrowth()
     dividendInstance.setTotalDivideds()
     dividendInstance.setAvgDividendin5years()
     dividendInstance.setMaxDividendin5Years()
     dividendInstance.setMinDividendin5Years()
-    dividendInstance.setIsDividendGrowthin3Years()
     dividendInstance.setDividendGrowthin3Years()
     dividendInstance.setDividendGrowthin5Years()
     dividendInstance.setDividendYield()
@@ -27,6 +34,7 @@ def createProfitDF(combinedDF, priceDFList, company):
     profitInstance.setAvgROEin4years()
     profitInstance.setMaxROEin4Years()
     profitInstance.setMinROEin4Years()
+    profitInstance.setYearPercentageOfHighROE()
     profitInstance.setROA()
     profitInstance.setROS()
     # profitInstance.setGrossMargin()
@@ -34,6 +42,7 @@ def createProfitDF(combinedDF, priceDFList, company):
     profitInstance.setOperatingCashFlow()
     profitInstance.setNetIncome()
     profitInstance.setFreeCashFlow()
+    profitInstance.setYearPercentageOfPositiveFreeCashFlow()
     profitInstance.setEPS()
     return profitInstance.getOutput()
 
@@ -46,7 +55,10 @@ def createGrowthDF(combinedDF, priceDFList, company):
     growthInstance.setReinvestmentRate()
     growthInstance.setResearch()
     growthInstance.setOperatingIncomeGrowth()
+    growthInstance.setOperatingIncomeAccelerateGrowth()
+    growthInstance.setYearPercentageOfOperatingIncomeGrowth()
     growthInstance.setRevenueGrowth()
+    growthInstance.setYearPercentageOfRevenueGrowth()
     growthInstance.setEPSGrowth()
     growthInstance.setEPSGrowth3YearAvg()
     return growthInstance.getOutput()
@@ -68,7 +80,9 @@ def createSafetyDF(combinedDF, priceDFList, company):
 
 
 def createParsTable(combinedDF, priceDFList, company):
+    createIndustryInfo(combinedDF, priceDFList, company)
     return pd.concat([
+        createIndustryInfo(combinedDF, priceDFList, company),
         createDividendDF(combinedDF, priceDFList, company),
         createProfitDF(combinedDF, priceDFList, company),
         createGrowthDF(combinedDF, priceDFList, company),

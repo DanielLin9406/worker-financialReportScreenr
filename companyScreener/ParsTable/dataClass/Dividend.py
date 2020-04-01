@@ -26,76 +26,105 @@ class Dividend(Super):
         return pd.Series([output], index=[self.latestYear])
 
     def getDividendGrowthin5Years(self):
-        latestYear = self.getDividend().get(self.latestYear)
-        fourYearsAgo = self.getDividend().get(self.fourYearsAgo)
-        output = self.divide((latestYear-fourYearsAgo), fourYearsAgo)
+        trimedDividend = self.getDividend()
+        series = self.divide(trimedDividend,
+                             trimedDividend.shift(periods=-1)).dropna()-1
+        output = series.mean()
         return pd.Series([output], index=[self.latestYear])
 
     def getDividendGrowthin3Years(self):
-        latestYear = self.getDividend().get(self.latestYear)
-        twoYearsAgo = self.getDividend().get(self.twoYearsAgo)
-        output = self.divide((latestYear-twoYearsAgo), twoYearsAgo)
+        trimedDividend = self.getDividend().head(4)
+        series = self.divide(trimedDividend,
+                             trimedDividend.shift(periods=-1)).dropna()-1
+        output = series.mean()
+        return pd.Series([output], index=[self.latestYear])
+
+    def getDividendGrowthin2Years(self):
+        trimedDividend = self.getDividend().head(3)
+        series = self.divide(trimedDividend,
+                             trimedDividend.shift(periods=-1)).dropna()-1
+        output = series.mean()
         return pd.Series([output], index=[self.latestYear])
 
     def isDividendGrowthin3Years(self):
-        sortByYear = self.getDividend().head(3)
-        sortByDividend = self.getDividend().head(3).sort_values(ascending=False)
+        sortByYear = self.getDividend().head(4).drop('TTM').dropna()
+        sortByDividend = sortByYear.sort_values(ascending=False)
         output = sortByYear.equals(sortByDividend)
-        return pd.Series([output], index=[self.latestYear])
+        return pd.Series([str(output)], index=[self.latestYear])
 
     def getDividendYield(self):
-        # print('TotalDividend', self.getTotalDividend())
-        # print('shares', self.getShares())
-        # print('Dividend', self.getDividend())
         return self.divide(self.getDividend(), self.getPrice())
 
     def getPayoutRatio(self):
         return self.divide(self.getTotalDividend(), self.getNetIncome())
 
+    def getDividendGrowth(self):
+        latestYear = self.getDividend().get(self.latestYear)
+        lastYear = self.getDividend().get(self.lastYear)
+        twoYearsAgo = self.getDividend().get(self.twoYearsAgo)
+        threeYearsAgo = self.getDividend().get(self.threeYearsAgo)
+        output1 = self.divide((latestYear-lastYear), lastYear)
+        output2 = self.divide((lastYear-twoYearsAgo), twoYearsAgo)
+        output3 = self.divide((twoYearsAgo-threeYearsAgo), threeYearsAgo)
+        return pd.Series([output1, output2, output3], index=[self.latestYear, self.lastYear, self.twoYearsAgo])
+
     def setPayoutRatio(self):
         output = self.getPayoutRatio()
-        self.setOutput(9, self.colName["payoutRatio"], output, self.latestYear)
+        self.setOutput(0, self.colName["payoutRatio"], output, self.latestYear)
 
     def setDividendYield(self):
         output = self.getDividendYield()
         self.setOutput(
-            8, self.colName["dividendYield"], output, self.latestYear)
+            0, self.colName["dividendYield"], output, self.latestYear)
 
     def setDividendGrowthin5Years(self):
         output = self.getDividendGrowthin5Years()
-        self.setOutput(7, self.colName["fiveYearAverageDividendGrowth"],
+        self.setOutput(0, self.colName["fiveYearAverageDividendGrowth"],
                        output, self.latestYear)
 
     def setDividendGrowthin3Years(self):
         output = self.getDividendGrowthin3Years()
-        self.setOutput(6, self.colName["threeYearAverageDividendGrowth"],
+        self.setOutput(0, self.colName["threeYearAverageDividendGrowth"],
                        output, self.latestYear)
 
-    def setIsDividendGrowthin3Years(self):
-        output = self.isDividendGrowthin3Years()
-        self.setOutput(5, self.colName["dividendGrowthinThreeYear"],
+    def setDividendGrowthin2Years(self):
+        output = self.getDividendGrowthin2Years()
+        self.setOutput(0, self.colName["threeYearAverageDividendGrowth"],
                        output, self.latestYear)
 
     def setMinDividendin5Years(self):
         output = self.getMinDividendin5Years()
         self.setOutput(
-            4, self.colName["minDividendinFiveYears"], output, self.latestYear)
+            0, self.colName["minDividendinFiveYears"], output, self.latestYear)
 
     def setMaxDividendin5Years(self):
         output = self.getMaxDividendin5Years()
         self.setOutput(
-            3, self.colName["maxDividendinFiveYears"], output, self.latestYear)
+            0, self.colName["maxDividendinFiveYears"], output, self.latestYear)
 
     def setAvgDividendin5years(self):
         output = self.getAvgDividendin5years()
         self.setOutput(
-            2, self.colName["fiveYearAverageDividend"], output, self.latestYear)
+            0, self.colName["fiveYearAverageDividend"], output, self.latestYear)
 
     def setTotalDivideds(self):
         output = self.getTotalDividend()
         self.setOutput(
-            1, self.colName["totalDividend"], output, self.latestYear)
+            0, self.colName["totalDividend"], output, self.latestYear)
+
+    def setDividendGrowth(self):
+        output = self.getDividendGrowth()
+        # print(output)
+        self.setOutput(
+            0, self.colName["dividendGrowth"], output, self.latestYear)
+        self.setOutput(
+            0, self.colName["dividendGrowthn1"], output, self.lastYear)
+        self.setOutput(
+            0, self.colName["dividendGrowthn2"], output, self.twoYearsAgo)
 
     def setDividend(self):
         output = self.getDividend()
+        # print(output)
         self.setOutput(0, self.colName["dividend"], output, self.latestYear)
+        self.setOutput(0, self.colName["dividendn1"], output, self.lastYear)
+        self.setOutput(0, self.colName["dividendn2"], output, self.twoYearsAgo)
