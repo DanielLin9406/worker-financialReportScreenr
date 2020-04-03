@@ -2,6 +2,7 @@ import gspread
 import json
 import pandas as pd
 import numpy as np
+import re
 
 from pathlib import Path
 from worker import readSeriesFromFile
@@ -31,6 +32,10 @@ def getValueListFromDF(df, sheetName, company):
         return np.nan_to_num(df.astype(float, errors="ignore").values).tolist()
     elif 'Analysis' in sheetName:
         return np.nan_to_num(df.astype(float, errors="ignore").values).tolist()
+    elif 'BuyDecision' in sheetName:
+        return np.nan_to_num(df.astype(float, errors="ignore").values).tolist()
+    elif 'SellDecision' in sheetName:
+        return np.nan_to_num(df.astype(float, errors="ignore").values).tolist()
 
 
 def getRangeOfList(sheetName, idNum):
@@ -40,6 +45,10 @@ def getRangeOfList(sheetName, idNum):
         return ''.join(['C', str(idNum), ':BL', str(idNum)])
     elif 'Price' in sheetName:
         return ''.join(['C', str(idNum), ':BO', str(idNum)])
+    elif 'BuyDecision' in sheetName:
+        return ''.join(['C', str(idNum), ':G', str(idNum)])
+    elif 'SellDecision' in sheetName:
+        return ''.join(['C', str(idNum), ':O', str(idNum)])
 
 
 def getFormatedOfCell(sheetName, idNum):
@@ -62,6 +71,22 @@ def getFormatedOfCell(sheetName, idNum):
     elif 'Price' in sheetName:
         data = {
             "range": "".join(["C", str(idNum), ":BO", str(idNum)]),
+            "formated": {
+                "horizontalAlignment": "CENTER"
+            }
+        }
+        return data
+    elif 'BuyDecision' in sheetName:
+        data = {
+            "range": "".join(["C", str(idNum), ":G", str(idNum)]),
+            "formated": {
+                "horizontalAlignment": "CENTER"
+            }
+        }
+        return data
+    elif 'SellDecision' in sheetName:
+        data = {
+            "range": "".join(["C", str(idNum), ":O", str(idNum)]),
             "formated": {
                 "horizontalAlignment": "CENTER"
             }
@@ -92,40 +117,70 @@ def upload2Sheet(df, sheetTabName, company, idNum):
     ws.batch_update(getUploadData(df, sheetTabName, company, idNum))
 
 
-def readSheetFromGoogleSheet(sheetTabName):
-    sheetName = "Stock"
-    ws = openSheet(sheetName, sheetTabName)
-    data = ws.get_all_values()
+def readCompanySheet(sheetTabName, data):
     df = pd.DataFrame(data[1:], columns=data[0])
     return df.set_index('Name')
 
 
-def readSheetFromCSV(csvName, company):
+def getName(bidArr):
+    result = []
+    i = 1
+    for ele in bidArr:
+        result.append(ele+'-'+str(i))
+        i = i + 1
+    return result
+
+
+def readMyStockSheet(sheetTabName, data):
+    bidArr = [ele for ele in data[4] if re.match("Bid/BidDate-*", ele)]
+    columnList = []
+    columnList.extend(['Company', 'Own Shares'])
+    columnList.extend(getName(bidArr))
+    df = pd.DataFrame(data[6:, 1:], columns=columnList)
+    return df.set_index('Company')
+
+
+def readDataFromGoogleSheet(sheetName, sheetTabName):
+    ws = openSheet(sheetName, sheetTabName)
+    return ws.get_all_values()
+
+
+def readSheetFromCSV(csvName):
     return pd.read_csv(csvName, index_col=0)
 
 
-def getCompany(csvName, company):
-    df = readSheetFromCSV(csvName, company)
-    return df.loc[company]
+def getCompany(fileName, company):
+    df = readSheetFromCSV(fileName)
+    if company in df.axes[0].values:
+        return df.loc[company]
+    else:
+        return pd.DataFrame()
 
 
 def saveAndGetCompany(df, fileName, company):
     df.to_csv(fileName)
-    return df.loc[company]
+    return getCompany(fileName, company)
 
 
 def getCompanyAndIndustryInfo(sheetTabName, company):
     fileName = 'company.csv'
+    sheetName = "Stock"
+    data = readDataFromGoogleSheet(sheetName, sheetTabName)
+
     if Path(fileName).is_file():
         return getCompany(fileName, company)
     else:
-        df = readSheetFromGoogleSheet(sheetTabName)
+        df = readCompanySheet(data)
         return saveAndGetCompany(df, fileName, company)
 
 
-def createCompanyAndIndustryInfo(sheetTabName, company):
-    series = getCompanyAndIndustryInfo(sheetTabName, company)
-    df = pd.DataFrame()
-    df.at[company, series.index[0]] = series.iloc[0]
-    df.at[company, series.index[1]] = series.iloc[1]
-    return df
+def getMyStock(sheetTabName, company):
+    fileName = 'mystock.csv'
+    sheetName = "Stock"
+    data = readDataFromGoogleSheet(sheetName, sheetTabName)
+
+    if Path(fileName).is_file():
+        return getCompany(fileName, company)
+    else:
+        df = readMyStockSheet(sheetTabName, np.array(data))
+        return saveAndGetCompany(df, fileName, company)

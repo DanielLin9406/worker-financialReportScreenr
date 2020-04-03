@@ -6,15 +6,17 @@ from ParsTable.dataClass.Safety import Safety
 from ParsTable.dataClass.Industry import Industry
 
 
-def createIndustryInfo(combinedDF, priceDFList, company):
-    industryInstance = Industry(combinedDF, priceDFList, company)
+def createIndustryInfo(combinedDF, parsDFList, company):
+    industryInstance = Industry(combinedDF, parsDFList, company)
+    industryInstance.setSector()
+    industryInstance.setIndustry()
     industryInstance.setMarketCapitalization()
     return industryInstance.getOutput()
 
 
-def createDividendDF(combinedDF, priceDFList, company):
+def createDividendDF(combinedDF, parsDFList, company):
     dividendInstance = Dividend(
-        combinedDF, priceDFList, company)
+        combinedDF, parsDFList, company)
     dividendInstance.setDividend()
     dividendInstance.setDividendGrowth()
     dividendInstance.setTotalDivideds()
@@ -28,8 +30,8 @@ def createDividendDF(combinedDF, priceDFList, company):
     return dividendInstance.getOutput()
 
 
-def createProfitDF(combinedDF, priceDFList, company):
-    profitInstance = Profit(combinedDF, priceDFList, company)
+def createProfitDF(combinedDF, parsDFList, company):
+    profitInstance = Profit(combinedDF, parsDFList, company)
     profitInstance.setROE()
     profitInstance.setAvgROEin4years()
     profitInstance.setMaxROEin4Years()
@@ -47,8 +49,8 @@ def createProfitDF(combinedDF, priceDFList, company):
     return profitInstance.getOutput()
 
 
-def createGrowthDF(combinedDF, priceDFList, company):
-    growthInstance = Growth(combinedDF, priceDFList, company)
+def createGrowthDF(combinedDF, parsDFList, company):
+    growthInstance = Growth(combinedDF, parsDFList, company)
     growthInstance.setROTA()
     growthInstance.setGrossMargin()
     growthInstance.setAssetTurnoverRatio()
@@ -64,8 +66,8 @@ def createGrowthDF(combinedDF, priceDFList, company):
     return growthInstance.getOutput()
 
 
-def createSafetyDF(combinedDF, priceDFList, company):
-    safetyInstance = Safety(combinedDF, priceDFList, company)
+def createSafetyDF(combinedDF, parsDFList, company):
+    safetyInstance = Safety(combinedDF, parsDFList, company)
     safetyInstance.setTotalAssests()
     safetyInstance.setTotalLiabilities()
     safetyInstance.setLongTermDebt()
@@ -79,11 +81,10 @@ def createSafetyDF(combinedDF, priceDFList, company):
     return safetyInstance.getOutput()
 
 
-def createParsTable(combinedDF, priceDFList, company):
-    createIndustryInfo(combinedDF, priceDFList, company)
+def createParsTable(combinedDF, parsDFList, company):
     return pd.concat([
-        createIndustryInfo(combinedDF, priceDFList, company),
-        createDividendDF(combinedDF, priceDFList, company),
-        createProfitDF(combinedDF, priceDFList, company),
-        createGrowthDF(combinedDF, priceDFList, company),
-        createSafetyDF(combinedDF, priceDFList, company)], axis=1)
+        createIndustryInfo(combinedDF, parsDFList, company),
+        createDividendDF(combinedDF, parsDFList, company),
+        createProfitDF(combinedDF, parsDFList, company),
+        createGrowthDF(combinedDF, parsDFList, company),
+        createSafetyDF(combinedDF, parsDFList, company)], axis=1)

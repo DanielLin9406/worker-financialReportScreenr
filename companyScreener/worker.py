@@ -1,20 +1,10 @@
-import os
-import io
 import time
-import quandl
 import pandas as pd
 import numpy as np
-import json
 import requests
-
 from pathlib import Path
-from dotenv import load_dotenv
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
-load_dotenv()
-
-quandl.ApiConfig.api_key = os.getenv("QUANDL_API_KEY")
-alphaVantageAPIKey = os.getenv("ALPHA_API_KEY")
 
 
 def cleanDataWorker(dir):
@@ -82,58 +72,6 @@ def fetchUrlWithLog(url, function, urlName):
         t1 = time.time()
         print('Took', t1 - t0, 'seconds to fetch from', urlName)
         return response.content
-
-
-def getStockPrice(company, fileName='price.csv'):
-    if Path(fileName).is_file() and isColumnExist(company, fileName):
-        # if file exist read from file
-        return getSeriesInDF(company, fileName)
-    else:
-        # if file not exist call api and save in file
-        url = ''.join(['https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=',
-                       company, '&apikey=', alphaVantageAPIKey, '&datatype=csv'])
-        urlName = 'Alphavantage'
-        content = fetchUrlWithLog(url, requestRetrySession, urlName)
-        df = pd.read_csv(io.StringIO(content.decode('utf-8')))
-        time.sleep(20)
-        priceDF = df.T.loc[['timestamp', 'close']].rename(
-            {'timestamp': 'timestamp', 'close': company}, axis='index')
-        return saveDFtoFile(priceDF, company, fileName)
-
-
-def getRevenueEstimate(company, fileName='revenueEstimate.csv'):
-    parName1 = ''.join([company, '-low'])
-    parName2 = ''.join([company, '-growth'])
-    if Path(fileName).is_file() and isColumnExist([parName1, parName2], fileName):
-        return getSeriesInDF([parName1, parName2], fileName)
-    else:
-        url = ''.join(['https://query1.finance.yahoo.com/v10/finance/quoteSummary/',
-                       company, '?modules=earningsTrend'])
-        urlName = 'Yahoo Finance API'
-        content = fetchUrlWithLog(url, requestRetrySession, urlName)
-        forcast1Quarter = None
-        forcast1Year = None
-        try:
-            trendDict = json.loads(
-                content)["quoteSummary"]["result"][0]["earningsTrend"]["trend"]
-            forcast1Year = trendDict[2]["revenueEstimate"]
-            forcast2Year = trendDict[3]["revenueEstimate"]
-        except Exception as x:
-            print('JSON Parse failed :(', x.__class__.__name__)
-            return pd.DataFrame()
-        else:
-            forcast1YearDF = pd.DataFrame(
-                forcast1Year).loc['raw'].rename('1 Year')
-            forcast2YearDF = pd.DataFrame(
-                forcast2Year).loc['raw'].rename('2 Year')
-            DF = pd.concat([forcast1YearDF, forcast2YearDF], axis=1)
-            NewDF = DF.loc[['low', 'growth']].rename(
-                {'low': parName1, 'growth': parName2}, axis='index')
-            return saveDFtoFile(NewDF, [parName1, parName2], fileName)
-
-
-def getTreasuriesYield():
-    return quandl.get("ML/AAAEY").sort_index(ascending=False)
 
 
 def formatedTable(financialDFCombined):

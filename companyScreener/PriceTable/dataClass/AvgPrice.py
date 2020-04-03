@@ -66,43 +66,36 @@ class AvgPrice(Super):
 
     def setDiscountPremiumOfEBT(self):
         output = self.getDiscountPremiumOfEBT()
-        print(output)
         return self.setOutput(
             0, self.colName["DiscountPremiumOfEBT"], output, self.latestYear)
 
     def setDiscountPremiumOfGraham(self):
         output = self.getDiscountPremiumOfGraham()
-        print(output)
         return self.setOutput(
             0, self.colName["DiscountPremiumOfGraham"], output, self.latestYear)
 
     def setDiscountPremiumOfDCF(self):
         output = self.getDiscountPremiumOfDCF()
-        print(output)
         return self.setOutput(
             0, self.colName["DiscountPremiumOfDCF"], output, self.latestYear)
 
     def setDiscountPremiumOfFCFE(self):
         output = self.getDiscountPremiumOfFCFE()
-        print(output)
         return self.setOutput(
             0, self.colName["DiscountPremiumOfFCFE"], output, self.latestYear)
 
     def setDiscountPremiumOfDDMH(self):
         output = self.getDiscountPremiumOfDDMH()
-        print(output)
         return self.setOutput(
             0, self.colName["DiscountPremiumOfDDMH"], output, self.latestYear)
 
     def setDiscountPremiumOfDDM2(self):
         output = self.getDiscountPremiumOfDDM2()
-        print(output)
         return self.setOutput(
             0, self.colName["DiscountPremiumOfDDM2"], output, self.latestYear)
 
     def setDiscountPremiumOfDDM(self):
         output = self.getDiscountPremiumOfDDM()
-        print(output)
         return self.setOutput(
             0, self.colName["DiscountPremiumOfDDM"], output, self.latestYear)
 

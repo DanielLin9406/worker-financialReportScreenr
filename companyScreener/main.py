@@ -4,9 +4,14 @@ import pandas as pd
 import time
 from ParsTable.CreateParsTable import createParsTable
 from PriceTable.CreatePriceTable import createPriceTable
-from CriteriaTable.CreateCriteriaTable import analyzeData
-from GoogleSheetAPI.GoogleSheetAPI import upload2Sheet, createCompanyAndIndustryInfo
-from worker import getStockPrice, getTreasuriesYield, cleanDataWorker, getRevenueEstimate
+from AnalyzeTable.CreateAnalyzeTable import createAnalyzeTable
+from BuyDecisionTable.CreateBuyDecisionTable import createBuyDecisionTable
+from SellDecisionTable.CreateSellDecisionTable import createSellDecisionTable
+from API.GoogleSheetAPI import upload2Sheet, getCompanyAndIndustryInfo, getMyStock
+from API.AlphaVantage import getStockPrice
+from API.YahooFinance import getRevenueEstimate, getDividendRecord
+from API.Quandl import getTreasuriesYield
+from worker import cleanDataWorker
 
 
 def mainProcess(dir, company, idNum):
@@ -15,22 +20,29 @@ def mainProcess(dir, company, idNum):
     priceDF = getStockPrice(company)
     revenueEstimateDF = getRevenueEstimate(company)
     treasuriesYieldDF = getTreasuriesYield()
+    companyInfoDF = getCompanyAndIndustryInfo('Company', company)
+    myStockDF = getMyStock('MyStock', company)
 
     parasTable = createParsTable(
-        formatedCombinedDF, [priceDF], company)
+        formatedCombinedDF, [priceDF, companyInfoDF], company)
     priceTable = createPriceTable(
         formatedCombinedDF, [priceDF, treasuriesYieldDF, revenueEstimateDF], company)
-    analyzedTable = analyzeData(parasTable, company)
-    print('Get Stock Name from Google Sheet at:', company)
-    companyTable = createCompanyAndIndustryInfo('Company', company)
-    newparasTable = pd.concat([companyTable, parasTable], axis=1)
-    print('Finish Getting Stock Name from Google Sheet at:', company)
-
+    analyzedTable = createAnalyzeTable(parasTable, company)
+    buyDecisionTable = createBuyDecisionTable(
+        priceTable, analyzedTable, company)
     # print('Start to upload to Google Sheet at:', company)
-    # upload2Sheet(newparasTable, 'Pars', company, idNum)
-    upload2Sheet(priceTable, 'Price', company, idNum)
+    # upload2Sheet(parasTable, 'Pars', company, idNum)
+    # upload2Sheet(priceTable, 'Price', company, idNum)
     # upload2Sheet(analyzedTable, 'Analysis', company, idNum)
+    # upload2Sheet(buyDecisionTable, 'BuyDecision', company, idNum)
     # print('Finish Uploading to Google Sheet at:', company)
+
+    if company in myStockDF.axes[0].values:
+        myDividendRecorDF = getDividendRecord(myStockDF, company)
+        sellDecisionTable = createSellDecisionTable(
+            priceTable, analyzedTable, company, myStockDF, myDividendRecorDF)
+        print('Start to upload to Google Sheet at:', company)
+        upload2Sheet(sellDecisionTable, 'SellDecision', company, idNum)
 
 
 def main(path):

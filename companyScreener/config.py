@@ -3,6 +3,8 @@ import numpy as np
 thisModule = sys.modules[__name__]
 
 IndustryName = dict(
+    sector="Sector",
+    industry="Industry",
     marketCapitalization="Market Capitalization"
 )
 
@@ -151,6 +153,32 @@ ValueName = dict(
     PEGRatio="PEGRatio",
     PBRatio="PBRatio",
     PEG="PEG",
+)
+
+AnalyzeName = dict(
+    sumValueInvestment='sum-valueInvestment',
+    sumGrowthInvestment='sum-growthInvestment',
+    fullCreditsValueInvestment='fullCredits-valueInvestment',
+    fullCreditsGrowthInvestment='fullCredits-growthInvestment',
+    investmentType="Investment Type",
+    finalScore="Final Score"
+)
+
+BuyDecisionTable = dict(
+    stockPrice=thisModule.PriceName["stockPrice"],
+    finalScore=thisModule.AnalyzeName["finalScore"],
+    investmentType=thisModule.AnalyzeName["investmentType"],
+    DiscountPremiumOfFCFE=thisModule.PriceName["DiscountPremiumOfFCFE"],
+)
+
+SellDecisionTable = dict(
+    dividend=thisModule.ShareHolderName["dividend"],
+    stockPrice=thisModule.PriceName["stockPrice"],
+    finalScore=thisModule.AnalyzeName["finalScore"],
+    lastYearFinalScore='Last Year Final Score',
+    investmentType=thisModule.AnalyzeName["investmentType"],
+    lastYearInvestmentType='Last Year Investment Type',
+    DiscountPremiumOfFCFE=thisModule.PriceName["DiscountPremiumOfFCFE"],
 )
 
 DDM = dict(

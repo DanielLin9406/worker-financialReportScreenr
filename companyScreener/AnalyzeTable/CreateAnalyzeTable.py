@@ -1,3 +1,4 @@
+import config
 import criteria as criteriaSetting
 import pandas as pd
 import numpy as np
@@ -241,17 +242,19 @@ def summarizeScore(countScoreDF, company):
         invesementType = 'Growth'
         finalScore = growthSum
 
-    result.at[company, 'sum-growthInvestment'] = growthSum
-    result.at[company, 'fullCredits-growthInvestment'] = growthFullCredits
-    result.at[company, 'sum-valueInvestment'] = valueSum
-    result.at[company, 'fullCredits-valueInvestment'] = valueFullCredits
-    result.at[company, 'Investment Type'] = invesementType
-    result.at[company, 'Final Score'] = finalScore
+    result.at[company, config.AnalyzeName['sumGrowthInvestment']] = growthSum
+    result.at[company, config.AnalyzeName['fullCreditsGrowthInvestment']
+              ] = growthFullCredits
+    result.at[company, config.AnalyzeName['sumValueInvestment']] = valueSum
+    result.at[company, config.AnalyzeName['fullCreditsValueInvestment']
+              ] = valueFullCredits
+    result.at[company, config.AnalyzeName['investmentType']] = invesementType
+    result.at[company, config.AnalyzeName['finalScore']] = finalScore
 
     return result
 
 
-def analyzeData(parasTable, company):
+def createAnalyzeTable(parasTable, company):
     ShareHolder = loopConfig(parasTable, company, "ShareHolder")
     FScore = loopConfig(parasTable, company, "FScore")
     Profit = loopConfig(parasTable, company, "Profit")
