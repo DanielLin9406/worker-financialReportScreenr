@@ -235,7 +235,7 @@ criteria = dict(
             "mode": ["valueInvestment"],
             "data":{
                 "pars": [
-                    config.ProfitName["yearPercentageOfPositiveFreeCashFlow"],
+                    config.SafetyName["yearPercentageOfPositiveFreeCashFlow"],
                 ],
                 "condition":{},
                 "criteria": {
@@ -253,7 +253,7 @@ criteria = dict(
             "mode": ["valueInvestment", "growthInvestment"],
             "data":{
                 "pars": [
-                    config.ProfitName["freeCashFlow"],
+                    config.SafetyName["freeCashFlow"],
                     config.ProfitName["operatingCashFlow"],
                 ],
                 "condition":{},

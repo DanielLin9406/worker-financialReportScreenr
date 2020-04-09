@@ -10,7 +10,7 @@ load_dotenv()
 alphaVantageAPIKey = os.getenv("ALPHA_API_KEY")
 
 
-def getStockPrice(company, fileName='price.csv'):
+def getStockPrice(company, fileName='stockPrice.csv'):
     if Path(fileName).is_file() and isColumnExist(company, fileName):
         # if file exist read from file
         return getSeriesInDF(company, fileName)

@@ -56,7 +56,7 @@ class Dividend(Super):
         return self.divide(self.getDividend(), self.getPrice())
 
     def getPayoutRatio(self):
-        return self.divide(self.getTotalDividend(), self.getNetIncome())
+        return self.divide(self.getTotalDividend(), self.getFreeCashFlow())
 
     def getDividendGrowth(self):
         latestYear = self.getDividend().get(self.latestYear)

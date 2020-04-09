@@ -5,7 +5,7 @@ import numpy as np
 import re
 
 from pathlib import Path
-from worker import readSeriesFromFile
+# from worker import readSeriesFromFile
 from oauth2client.service_account import ServiceAccountCredentials
 
 scope = ["https://spreadsheets.google.com/feeds",
@@ -175,7 +175,7 @@ def getCompanyAndIndustryInfo(sheetTabName, company):
 
 
 def getMyStock(sheetTabName, company):
-    fileName = 'mystock.csv'
+    fileName = 'myStock.csv'
     sheetName = "Stock"
     data = readDataFromGoogleSheet(sheetName, sheetTabName)
 

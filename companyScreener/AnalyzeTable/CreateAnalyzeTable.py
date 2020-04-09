@@ -5,78 +5,75 @@ import numpy as np
 import copy
 
 
-def gt(para1, para2, criteria):
-    if para2 is not None:
-        return para1.div(para2).gt(criteria)
-    else:
-        return para1.gt(criteria)
+# def gt(para1, para2, criteria):
+#     if para2 is not None:
+#         return para1.div(para2).gt(criteria)
+#     else:
+#         return para1.gt(criteria)
 
 
-def lt(para1, para2, criteria):
-    if para2 is not None:
-        return para1.div(para2).lt(criteria)
-    else:
-        return para1.lt(criteria)
+# def lt(para1, para2, criteria):
+#     if para2 is not None:
+#         return para1.div(para2).lt(criteria)
+#     else:
+#         return para1.lt(criteria)
 
 
-def eq(para1, para2, criteria):
-    if para2 is not None:
-        return para1.div(para2).eq(criteria)
-    else:
-        return para1.eq(criteria)
+# def eq(para1, para2, criteria):
+#     if para2 is not None:
+#         return para1.div(para2).eq(criteria)
+#     else:
+#         return para1.eq(criteria)
 
 
-def criteriaSwitcher(condition, parasTable, company):
-    switch = {
-        "gt": gt,
-        "lt": lt,
-        "eq": eq
-    }
-    function = switch.get(copy.deepcopy(condition["operator"]).pop())
-    para1 = parasTable.get(condition["name"])
-    criteria = pd.Series([condition["criteria"]], index=[
-                         company])
-    if "name2" in condition:
-        para2 = parasTable.get(condition["name2"])
-    else:
-        para2 = None
+# def criteriaSwitcher(condition, parasTable, company):
+#     switch = {
+#         "gt": gt,
+#         "lt": lt,
+#         "eq": eq
+#     }
+#     function = switch.get(copy.deepcopy(condition["operator"]).pop())
+#     para1 = parasTable.get(condition["name"])
+#     criteria = pd.Series([condition["criteria"]], index=[
+#                          company])
+#     if "name2" in condition:
+#         para2 = parasTable.get(condition["name2"])
+#     else:
+#         para2 = None
 
-    return function(para1, para2, criteria).get(company)
-
-
-def checkCriteria(parasTable, company, test):
-    # Test
-    #   {
-    #     "name": "dividendYield>2%",
-    #     "mode": "valueInvestment",
-    #     "data": [{"name": thisModule.ShareHolderName["dividendYield"],
-    #               "criteria": "2%", "operator":"gt"}]
-    #   }
-    result = []
-    for condition in test["data"]:
-        result.append(criteriaSwitcher(condition, parasTable, company))
-    return all(ele == True for ele in result)
+#     return function(para1, para2, criteria).get(company)
 
 
-def countTrue(countTrueDF, company, listName):
-    trueNumber = {}
-    total = {}
-    ratioPars = {}
-    result = pd.DataFrame()
-    df = pd.concat(countTrueDF, axis=0)
-    for index in df.axes[1].values:
-        trueNumber[index] = np.sum(
-            df.get(index).dropna().convert_dtypes(convert_boolean=True))
-        total[index] = len(df.get(index).dropna())
-        ratioPars[index] = np.divide(trueNumber[index], total[index])
-        result.at[company, '-'.join([listName, str(index)])] = ratioPars[index]
-    return result
+# def checkCriteria(parasTable, company, test):
+#     # Test
+#     #   {
+#     #     "name": "dividendYield>2%",
+#     #     "mode": "valueInvestment",
+#     #     "data": [{"name": thisModule.ShareHolderName["dividendYield"],
+#     #               "criteria": "2%", "operator":"gt"}]
+#     #   }
+#     result = []
+#     for condition in test["data"]:
+#         result.append(criteriaSwitcher(condition, parasTable, company))
+#     return all(ele == True for ele in result)
+
+
+# def countTrue(countTrueDF, company, listName):
+#     trueNumber = {}
+#     total = {}
+#     ratioPars = {}
+#     result = pd.DataFrame()
+#     df = pd.concat(countTrueDF, axis=0)
+#     for index in df.axes[1].values:
+#         trueNumber[index] = np.sum(
+#             df.get(index).dropna().convert_dtypes(convert_boolean=True))
+#         total[index] = len(df.get(index).dropna())
+#         ratioPars[index] = np.divide(trueNumber[index], total[index])
+#         result.at[company, '-'.join([listName, str(index)])] = ratioPars[index]
+#     return result
 
 
 def isValueInThisPeriod(lowerBond, value, upperBond):
-    # print('lowerBond', lowerBond)
-    # print('value', value)
-    # print('upperBond', upperBond)
     if ((lowerBond < value) and (value < upperBond or upperBond == value)):
         return True
     else:
@@ -192,14 +189,16 @@ def countScore(countTrueDF, company, listName):
 
 def loopConfig(parasTable, company, listName):
     # resultDF = pd.DataFrame(dtype="boolean")
-    ScoreDF = pd.DataFrame(dtype="float64")
     # countTrueDFList = []
-    countScoreDFList = []
+    #
     # for test in config.criteria[listName]:
     #     boolean = checkCriteria(parasTable, company, test)
     #     resultDF.at[company, test["name"]] = boolean
     #     countTrueDFList.append(pd.DataFrame(
     #         [[boolean]*len(test["mode"])], index=[test["name"]], columns=test["mode"], dtype="boolean"))
+
+    ScoreDF = pd.DataFrame(dtype="float64")
+    countScoreDFList = []
 
     for test in criteriaSetting.criteria[listName]:
         score = checkScoreCriteria(parasTable, company, test)
@@ -215,23 +214,22 @@ def loopConfig(parasTable, company, listName):
     }
 
 
-def summarizeScore(countScoreDF, company):
-    result = pd.DataFrame()
-    valueScoreDF = countScoreDF.filter(
-        regex='valueInvestment-Score').iloc[0]
+def getSumAndFullCredits(countScoreDF, company):
+    valueScoreDF = countScoreDF.filter(regex='valueInvestment-Score').iloc[0]
     valueFullCreditsDF = countScoreDF.filter(
         regex='valueInvestment-Full Credits').iloc[0]
-    growthScoreDF = countScoreDF.filter(
-        regex='growthInvestment-Score').iloc[0]
+    growthScoreDF = countScoreDF.filter(regex='growthInvestment-Score').iloc[0]
     growthFullCreditsDF = countScoreDF.filter(
         regex='growthInvestment-Full Credits').iloc[0]
-    # print(growthFullCreditsDF)
+
     valueSum = np.sum(valueScoreDF.dropna())
     valueFullCredits = np.sum(valueFullCreditsDF.dropna())
     growthSum = np.sum(growthScoreDF.dropna())
     growthFullCredits = np.sum(growthFullCreditsDF.dropna())
+
     value = np.divide(valueSum, valueFullCredits)
     growth = np.divide(growthSum, growthFullCredits)
+
     invesementType = ''
     finalScore = ''
 
@@ -241,15 +239,32 @@ def summarizeScore(countScoreDF, company):
     elif value < growth:
         invesementType = 'Growth'
         finalScore = growthSum
+    return {
+        'valueSum': valueSum,
+        'growthSum': growthSum,
+        'growthFullCredits': growthFullCredits,
+        'valueFullCredits': valueFullCredits,
+        'invesementType': invesementType,
+        'finalScore': finalScore
+    }
 
-    result.at[company, config.AnalyzeName['sumGrowthInvestment']] = growthSum
+
+def summarizeScore(countScoreDF, company):
+    result = pd.DataFrame()
+    sumAndFullCreditsDict = getSumAndFullCredits(countScoreDF, company)
+
+    result.at[company, config.AnalyzeName['sumGrowthInvestment']
+              ] = sumAndFullCreditsDict['growthSum']
     result.at[company, config.AnalyzeName['fullCreditsGrowthInvestment']
-              ] = growthFullCredits
-    result.at[company, config.AnalyzeName['sumValueInvestment']] = valueSum
+              ] = sumAndFullCreditsDict['growthFullCredits']
+    result.at[company, config.AnalyzeName['sumValueInvestment']
+              ] = sumAndFullCreditsDict['valueSum']
     result.at[company, config.AnalyzeName['fullCreditsValueInvestment']
-              ] = valueFullCredits
-    result.at[company, config.AnalyzeName['investmentType']] = invesementType
-    result.at[company, config.AnalyzeName['finalScore']] = finalScore
+              ] = sumAndFullCreditsDict['valueFullCredits']
+    result.at[company, config.AnalyzeName['investmentType']
+              ] = sumAndFullCreditsDict['invesementType']
+    result.at[company, config.AnalyzeName['finalScore']
+              ] = sumAndFullCreditsDict['finalScore']
 
     return result
 

@@ -43,27 +43,12 @@ class Profit(Super):
         output = self.getROE().head(4).max()
         return pd.Series([output], index=[self.latestYear])
 
-    def getYearPercentageOfPositiveFreeCashFlow(self):
-        output = self.divide(
-            np.sum(self.getFreeCashFlow().dropna().gt(0)), len(self.getFreeCashFlow().dropna()))
-        return pd.Series([output], index=[self.latestYear])
-
     def setEPS(self):
         output = self.getEPS()
         self.setOutput(0, self.colName["EPS"], output, self.latestYear)
         self.setOutput(0, self.colName["EPSn1"], output, self.lastYear)
         self.setOutput(0, self.colName["EPSn2"], output, self.twoYearsAgo)
         self.setOutput(0, self.colName["EPSn3"], output, self.threeYearsAgo)
-
-    def setYearPercentageOfPositiveFreeCashFlow(self):
-        output = self.getYearPercentageOfPositiveFreeCashFlow()
-        self.setOutput(
-            0, self.colName["yearPercentageOfPositiveFreeCashFlow"], output, self.latestYear)
-
-    def setFreeCashFlow(self):
-        output = self.getFreeCashFlow()
-        self.setOutput(
-            0, self.colName["freeCashFlow"], output, self.latestYear)
 
     def setNetIncome(self):
         output = self.getNetIncome()
@@ -80,9 +65,6 @@ class Profit(Super):
         self.setOutput(
             0, self.colName["operatingMargin"], output, self.latestYear)
 
-    # def setGrossMargin(self):
-    #     output = self.getGrossMargin()
-    #     self.setOutput(9, self.colName["grossMargin"], output, self.latestYear)
     def setROS(self):
         output = self.getROS()
         self.setOutput(0, self.colName["ROS"], output, self.latestYear)
@@ -117,4 +99,3 @@ class Profit(Super):
         self.setOutput(0, self.colName["ROEn1"], output, self.lastYear)
         self.setOutput(0, self.colName["ROEn2"], output, self.twoYearsAgo)
         self.setOutput(0, self.colName["ROEn3"], output, self.threeYearsAgo)
-        # self.setOutput(4, self.colName["ROEn4"], output, self.fourYearsAgo)

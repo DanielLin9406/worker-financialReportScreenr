@@ -52,7 +52,32 @@ def getRevenueEstimate(company, fileName='revenueEstimate.csv'):
             return saveDFtoFile(NewDF, [parName1, parName2], fileName)
 
 
-def getDividendRecord(myStockDF, company, fileName='dividend.csv'):
+def getDividendRecord(company, fileName='dividendRecord.csv'):
+    parName1 = ''.join([company, '-amount'])
+    parName2 = ''.join([company, '-date'])
+    firstBidUnixTimestamp = getUnixTimeStamp([[2014, 1, 3]])
+    if Path(fileName).is_file() and isColumnExist([parName1, parName2], fileName):
+        return getSeriesInDF([parName1, parName2], fileName)
+    else:
+        url = ''.join(['https://query1.finance.yahoo.com/v8/finance/chart/',
+                       company, '?period1=', firstBidUnixTimestamp, '&period2=9999999999&interval=1d&includePrePost=false&events=div%2Csplit'])
+        urlName = 'Yahoo Finance Chart API'
+        content = fetchUrlWithLog(url, requestRetrySession, urlName)
+        try:
+            dividendDict = json.loads(
+                content)["chart"]["result"][0]["events"]["dividends"]
+        except Exception as x:
+            print('JSON Parse failed when getting dividend :(',
+                  x.__class__.__name__)
+            return pd.DataFrame()
+        else:
+            DF = pd.DataFrame(dividendDict).rename(
+                {'amount': parName1, 'date': parName2}, axis='index')
+            print(DF)
+            return saveDFtoFile(DF, [parName1, parName2], fileName)
+
+
+def getMyDividendRecord(myStockDF, company, fileName='myDividendRecord.csv'):
     parName1 = ''.join([company, '-amount'])
     parName2 = ''.join([company, '-date'])
     firstBidTime = getBidDate(myStockDF)

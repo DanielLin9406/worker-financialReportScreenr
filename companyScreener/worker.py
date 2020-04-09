@@ -45,7 +45,7 @@ def isColumnExist(company, fileName):
 
 def readSeriesFromFile(fileName):
     try:
-        return pd.read_csv(fileName, index_col=0)
+        return pd.read_csv(fileName, index_col=0, error_bad_lines=False, warn_bad_lines=False,)
     except Exception as x:
         print('Read CSV failed :(', x.__class__.__name__)
         return pd.DataFrame()
