@@ -2,15 +2,16 @@ import io
 import os
 import time
 import pandas as pd
+import Config.pathConfig as pathConfig
 from pathlib import Path
 from dotenv import load_dotenv
-from worker import isColumnExist, getSeriesInDF, fetchUrlWithLog, requestRetrySession, saveDFtoFile
+from Worker.worker import isColumnExist, getSeriesInDF, fetchUrlWithLog, requestRetrySession, saveDFtoFile
 load_dotenv()
 
 alphaVantageAPIKey = os.getenv("ALPHA_API_KEY")
 
 
-def getStockPrice(company, fileName='stockPrice.csv'):
+def getStockPrice(company, fileName=pathConfig.cache+'stockPrice.csv'):
     if Path(fileName).is_file() and isColumnExist(company, fileName):
         # if file exist read from file
         return getSeriesInDF(company, fileName)

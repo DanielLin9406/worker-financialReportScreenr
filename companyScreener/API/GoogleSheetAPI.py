@@ -3,7 +3,7 @@ import json
 import pandas as pd
 import numpy as np
 import re
-
+import Config.pathConfig as pathConfig
 from pathlib import Path
 # from worker import readSeriesFromFile
 from oauth2client.service_account import ServiceAccountCredentials
@@ -163,7 +163,7 @@ def saveAndGetCompany(df, fileName, company):
 
 
 def getCompanyAndIndustryInfo(sheetTabName, company):
-    fileName = 'company.csv'
+    fileName = pathConfig.cache+'company.csv'
     sheetName = "Stock"
     data = readDataFromGoogleSheet(sheetName, sheetTabName)
 
@@ -175,7 +175,7 @@ def getCompanyAndIndustryInfo(sheetTabName, company):
 
 
 def getMyStock(sheetTabName, company):
-    fileName = 'myStock.csv'
+    fileName = pathConfig.cache+'myStock.csv'
     sheetName = "Stock"
     data = readDataFromGoogleSheet(sheetName, sheetTabName)
 

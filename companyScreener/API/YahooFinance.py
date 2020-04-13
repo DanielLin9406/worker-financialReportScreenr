@@ -4,10 +4,11 @@ import time
 import datetime
 import json
 import pandas as pd
+import Config.pathConfig as pathConfig
 from pathlib import Path
 from dotenv import load_dotenv
-from SellDecisionTable.CreateSellDecisionTable import getBidDate
-from worker import isColumnExist, getSeriesInDF, fetchUrlWithLog, requestRetrySession, saveDFtoFile
+from CreateTables.SellDecisionTableStrategy import getBidDate
+from Worker.worker import isColumnExist, getSeriesInDF, fetchUrlWithLog, requestRetrySession, saveDFtoFile
 load_dotenv()
 
 
@@ -19,7 +20,7 @@ def getUnixTimeStamp(firstBidTime):
     return str(int(time.mktime(d.timetuple())))
 
 
-def getRevenueEstimate(company, fileName='revenueEstimate.csv'):
+def getRevenueEstimate(company, fileName=pathConfig.cache+'revenueEstimate.csv'):
     parName1 = ''.join([company, '-low'])
     parName2 = ''.join([company, '-growth'])
     if Path(fileName).is_file() and isColumnExist([parName1, parName2], fileName):
@@ -52,7 +53,7 @@ def getRevenueEstimate(company, fileName='revenueEstimate.csv'):
             return saveDFtoFile(NewDF, [parName1, parName2], fileName)
 
 
-def getDividendRecord(company, fileName='dividendRecord.csv'):
+def getDividendRecord(company, fileName=pathConfig.cache+'dividendRecord.csv'):
     parName1 = ''.join([company, '-amount'])
     parName2 = ''.join([company, '-date'])
     firstBidUnixTimestamp = getUnixTimeStamp([[2014, 1, 3]])
@@ -77,7 +78,7 @@ def getDividendRecord(company, fileName='dividendRecord.csv'):
             return saveDFtoFile(DF, [parName1, parName2], fileName)
 
 
-def getMyDividendRecord(myStockDF, company, fileName='myDividendRecord.csv'):
+def getMyDividendRecord(myStockDF, company, fileName=pathConfig.cache+'myDividendRecord.csv'):
     parName1 = ''.join([company, '-amount'])
     parName2 = ''.join([company, '-date'])
     firstBidTime = getBidDate(myStockDF)
