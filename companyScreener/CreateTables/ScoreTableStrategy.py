@@ -4,7 +4,6 @@ import pandas as pd
 from abc import ABC, abstractmethod, abstractproperty
 import Config.config as config
 import Config.criteria as criteriaSetting
-from .Context import Context
 
 
 # # def gt(para1, para2, criteria):
@@ -370,8 +369,7 @@ class CalculateScoreStrategy:
 
 
 class CountScoreStrategy:
-    def __init__(self, countScoreDFList):
-        self._inputData = pd.concat(countScoreDFList, axis=0)
+    def __init__(self):
         self._resultDF = pd.DataFrame()
 
     def getSumScore(self, df, index):
@@ -401,9 +399,10 @@ class CountScoreStrategy:
     def doAlgorithm(self, kwargs):
         listName = kwargs.get('listName')
         company = kwargs.get('company')
+        countScoreDFList = kwargs.get('countScoreDFList')
         sumScore = {}
         fullScore = {}
-        df = self._inputData
+        df = pd.concat(countScoreDFList, axis=0)
         for index in df.axes[1].sort_values().values:
             sumScore[index] = self.getSumScore(df, index)
             fullScore[index] = self.getFullScore(df, index, listName)
@@ -411,12 +410,10 @@ class CountScoreStrategy:
 
 
 class SummarizeScoreStrategy:
-    def __init__(self, countScoreDFList, company):
+    def __init__(self):
         self._resultDF = pd.DataFrame()
-        self._countScoreDF = pd.concat(countScoreDFList, axis=1)
 
-    def getSumAndFullCredits(self):
-        countScoreDF = self._countScoreDF
+    def getSumAndFullCredits(self, countScoreDF):
         valueScoreDF = countScoreDF.filter(
             regex='valueInvestment-Score').iloc[0]
         valueFullCreditsDF = countScoreDF.filter(
@@ -452,8 +449,8 @@ class SummarizeScoreStrategy:
             'finalScore': finalScore
         }
 
-    def setSummarizeScoreDF(self, company):
-        infoDict = self.getSumAndFullCredits()
+    def setSummarizeScoreDF(self, company, countScoreDF):
+        infoDict = self.getSumAndFullCredits(countScoreDF)
         self._resultDF.at[company, config.AnalyzeName['sumGrowthInvestment']
                           ] = infoDict['growthSum']
         self._resultDF.at[company, config.AnalyzeName['fullCreditsGrowthInvestment']
@@ -474,21 +471,23 @@ class SummarizeScoreStrategy:
     @doAlgorithm.setter
     def doAlgorithm(self, kwargs):
         company = kwargs.get('company')
-        self.setSummarizeScoreDF(company)
+        summarizedScoreList = kwargs.get('summarizedScoreList')
+        countScoreDF = pd.concat(summarizedScoreList, axis=1)
+        self.setSummarizeScoreDF(company, countScoreDF)
 
 
-def createCriteriaScoreDF(parsTable, company, listName):
-    context = Context(**dict(
-        listName=listName,
-        company=company,
-        parsTable=parsTable
-    ))
+def createCriteriaScoreDF(**kwargs):
+    context = kwargs.get('context')
+    context.company = kwargs.get('company')
+    context.parsTable = kwargs.get('parsTable')
+    context.listName = kwargs.get('listName')
 
     """
     @param: DataFrame
     @return: DataFrame
     """
     strategy = CalculateScoreStrategy()
+    countScoreDFList = strategy.getScoreDFList()
     context.strategy = strategy
     scoreDF = context.doScoreAlgorithm()
 
@@ -496,9 +495,9 @@ def createCriteriaScoreDF(parsTable, company, listName):
     @param: DataFrame List
     @return: DataFrame
     """
-    scoreDFList = strategy.getScoreDFList()
-    context.strategy = CountScoreStrategy(scoreDFList)
-    countScoreDF = context.doScoreAlgorithm()
+    context.countScoreDFList = countScoreDFList
+    context.strategy = CountScoreStrategy()
+    countScoreDF = context.doCountScoreAlgorithm()
 
     return {
         "Score": scoreDF,
@@ -507,19 +506,15 @@ def createCriteriaScoreDF(parsTable, company, listName):
 
 
 def createSummarizedScore(**kwargs):
-    company = kwargs.get('company')
-    countScoreList = kwargs.get('countScoreList')
-    context = Context(**dict(
-        company=company,
-    ))
     """
     @param: DataFrame List
     @return: DataFrame
     """
-    strategy = SummarizeScoreStrategy(countScoreList, company)
-    context.strategy = strategy
-    summarizedScoreDF = context.doSummarizedAlgorithm()
-    return summarizedScoreDF
+    context = kwargs.get('context')
+    context.company = kwargs.get('company')
+    context.summarizedScoreList = kwargs.get('summarizedScoreList')
+    context.strategy = SummarizeScoreStrategy()
+    return context.doSummarizedAlgorithm()
 
 
 def createScoreAndCountScore(**kwargs):
@@ -527,34 +522,15 @@ def createScoreAndCountScore(**kwargs):
         Score=[],
         CountScore=[]
     )
-    parsTable = kwargs.get('parsTable')
-    company = kwargs.get('company')
-
-    instance = createCriteriaScoreDF(parsTable, company, "ShareHolder")
-    result['Score'].append(instance["Score"])
-    result['CountScore'].append(instance["CountScore"])
-
-    instance = createCriteriaScoreDF(parsTable, company, "Profit")
-    result['Score'].append(instance["Score"])
-    result['CountScore'].append(instance["CountScore"])
-
-    instance = createCriteriaScoreDF(parsTable, company, "Growth")
-    result['Score'].append(instance["Score"])
-    result['CountScore'].append(instance["CountScore"])
-
-    instance = createCriteriaScoreDF(parsTable, company, "Safety")
-    result['Score'].append(instance["Score"])
-    result['CountScore'].append(instance["CountScore"])
-
-    instance = createCriteriaScoreDF(parsTable, company, "FScore")
-    result['Score'].append(instance["Score"])
-    result['CountScore'].append(instance["CountScore"])
-
+    for name in ["ShareHolder", "Profit", "Growth", "Safety", "FScore"]:
+        scoreDict = createCriteriaScoreDF(**kwargs, **dict(listName=name))
+        result['Score'].append(scoreDict["Score"])
+        result['CountScore'].append(scoreDict["CountScore"])
     return result
 
 
 def ScoreTable(**kwargs):
     resultDict = createScoreAndCountScore(**kwargs)
-    summarizedScoreDF = createSummarizedScore(
-        **kwargs, **dict(countScoreList=resultDict['CountScore']))
+    summarizedScoreList = dict(summarizedScoreList=resultDict['CountScore'])
+    summarizedScoreDF = createSummarizedScore(**kwargs, **summarizedScoreList)
     return pd.concat([*resultDict['Score'], *resultDict['CountScore'], summarizedScoreDF], axis=1)

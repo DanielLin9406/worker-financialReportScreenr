@@ -165,6 +165,8 @@ def mainProcess(entry, idNum):
             company=company
         )
     )
+    print('new scoreTable', scoreTable)
+    print('new buyDecisionTable', buyDecisionTable)
     # OLD
     # scoreTable = createAnalyzeTable(parsTable, company)
     # buyDecisionTable = createBuyDecisionTable(priceTable, scoreTable, company)
@@ -178,27 +180,28 @@ def mainProcess(entry, idNum):
 
     print('Step7: Create MyStock Factory', company)
     myStockDF = getMyStock('MyStock', company)
-    if company in myStockDF.axes[0].values:
-        print('Start to deal with my Stock', company)
-        myDividendRecorDF = getMyDividendRecord(myStockDF, company)
-        # Done
-        # New
-        sellDecisionTable = analyzeTablesFactory.createSellDecisionTable(
-            **dict(
-                scoreTable=scoreTable,
-                priceTable=priceTable,
-                company=company,
-                myStockDF=myStockDF,
-                myDividendRecorDF=myDividendRecorDF
-            )
+    if company not in myStockDF.axes[0].values:
+        return
+
+    # Done
+    # New
+    myDividendRecorDF = getMyDividendRecord(myStockDF, company)
+    sellDecisionTable = analyzeTablesFactory.createSellDecisionTable(
+        **dict(
+            scoreTable=scoreTable,
+            priceTable=priceTable,
+            company=company,
+            myStockDF=myStockDF,
+            myDividendRecorDF=myDividendRecorDF
         )
-        # print('new', sellDecisionTable)
-        # Old
-        # sellDecisionTable = createSellDecisionTable(
-        #     priceTable, scoreTable, company, myStockDF, myDividendRecorDF)
-        # print('old', sellDecisionTable)
-        # print('Start to upload to Google Sheet at:', company)
-        # upload2Sheet(sellDecisionTable, 'SellDecision', company, idNum)
+    )
+    print('new sellDecisionTable', sellDecisionTable)
+    # Old
+    # sellDecisionTable = createSellDecisionTable(
+    #     priceTable, scoreTable, company, myStockDF, myDividendRecorDF)
+    # print('old', sellDecisionTable)
+    # print('Start to upload to Google Sheet at:', company)
+    # upload2Sheet(sellDecisionTable, 'SellDecision', company, idNum)
 
 
 def scanFolderTree(folder):

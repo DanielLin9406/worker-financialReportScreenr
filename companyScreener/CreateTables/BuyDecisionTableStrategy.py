@@ -3,37 +3,35 @@ import Config.config as config
 from .Context import Context
 
 
-def createBuyDecisionTable(priceTable, analyzedTable, company):
-    result = pd.DataFrame()
-    stockPriceName = config.BuyDecisionTable["stockPrice"]
-    finalScoreName = config.BuyDecisionTable['finalScore']
-    investmentName = config.BuyDecisionTable["investmentType"]
-    discountPremiumName = config.BuyDecisionTable["DiscountPremiumOfFCFE"]
-    result.at[company, stockPriceName] = priceTable.get(
-        stockPriceName).loc[company]
-    result.at[company, finalScoreName] = analyzedTable.get(
-        finalScoreName).loc[company]
-    result.at[company, investmentName] = analyzedTable.get(
-        investmentName).loc[company]
-    result.at[company, discountPremiumName] = priceTable.get(
-        discountPremiumName).loc[company]
-    return result
+# def createBuyDecisionTable(priceTable, analyzedTable, company):
+#     result = pd.DataFrame()
+#     stockPriceName = config.BuyDecisionTable["stockPrice"]
+#     finalScoreName = config.BuyDecisionTable['finalScore']
+#     investmentName = config.BuyDecisionTable["investmentType"]
+#     discountPremiumName = config.BuyDecisionTable["DiscountPremiumOfFCFE"]
+#     result.at[company, stockPriceName] = priceTable.get(
+#         stockPriceName).loc[company]
+#     result.at[company, finalScoreName] = analyzedTable.get(
+#         finalScoreName).loc[company]
+#     result.at[company, investmentName] = analyzedTable.get(
+#         investmentName).loc[company]
+#     result.at[company, discountPremiumName] = priceTable.get(
+#         discountPremiumName).loc[company]
+#     return result
 
 
 class BuyDecisionStrategy:
-    def __init__(self, priceTable, scoreTable, company):
+    def __init__(self):
         self._resultDF = pd.DataFrame()
-        self._priceTable = priceTable
-        self._scoreTable = scoreTable
-        self._company = company
 
-    def setResultDF(self, company):
+    def setResultDF(self):
         stockPriceName = config.BuyDecisionTable["stockPrice"]
         finalScoreName = config.BuyDecisionTable['finalScore']
         investmentName = config.BuyDecisionTable["investmentType"]
         discountPremiumName = config.BuyDecisionTable["DiscountPremiumOfFCFE"]
         priceTable = self._priceTable
         scoreTable = self._scoreTable
+        company = self._company
 
         self._resultDF.at[company, stockPriceName] = priceTable.get(
             stockPriceName).loc[company]
@@ -44,23 +42,29 @@ class BuyDecisionStrategy:
         self._resultDF.at[company, discountPremiumName] = priceTable.get(
             discountPremiumName).loc[company]
 
+    def setPars(self, kwargs):
+        self._priceTable = kwargs.get('priceTable')
+        self._scoreTable = kwargs.get('scoreTable')
+        self._company = kwargs.get('company')
+
     @property
     def doAlgorithm(self):
         return self._resultDF
 
     @doAlgorithm.setter
     def doAlgorithm(self, kwargs):
-        company = kwargs.get('company')
-        self.setResultDF(company)
+        self.setPars(kwargs)
+        self.setResultDF()
 
 
 def BuyDecisionTable(**kwargs):
-    scoreTable = kwargs.get('scoreTable')
-    priceTable = kwargs.get('priceTable')
-    company = kwargs.get('company')
-    context = Context(**dict(
-        company=company,
-    ))
-    context.strategy = BuyDecisionStrategy(priceTable, scoreTable, company)
-    buydecisionDF = context.doSummarizedAlgorithm()
-    return buydecisionDF
+    """
+    @param: DataFrame
+    @return: DataFrame
+    """
+    context = kwargs.get('context')
+    context.company = kwargs.get('company')
+    context.scoreTable = kwargs.get('scoreTable')
+    context.priceTable = kwargs.get('priceTable')
+    context.strategy = BuyDecisionStrategy()
+    return context.doBuyDecisionAlgorithm()
