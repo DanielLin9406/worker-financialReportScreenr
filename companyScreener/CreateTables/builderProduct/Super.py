@@ -49,7 +49,9 @@ class Super:
         return self.getParsSeries("Total Equity")
 
     def getPrice(self):
-        return pd.Series([self.priceDF.iloc[0]], index=[self.latestYear], dtype="float")
+        # result = pd.Series([self.priceDF.iloc[0]], index=[self.latestYear], dtype="float")
+        return pd.Series([self.priceDF.T.get(''.join(
+            [self.company, '-amount'])).iloc[0]], index=[self.latestYear], dtype="float")
 
     def getPretaxIncome(self):
         return self.getParsSeries('Pretax Income')

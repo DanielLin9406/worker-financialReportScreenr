@@ -1,6 +1,10 @@
+from Worker.logger import dumpArgs
 import time
+import io
 import pandas as pd
+import datetime
 import numpy as np
+import json
 import requests
 from pathlib import Path
 from requests.adapters import HTTPAdapter
@@ -27,16 +31,28 @@ def requestRetrySession(
     return session
 
 
+def isCacheExist(key, fileName):
+    return Path(fileName).is_file() and isColumnExist(key, fileName)
+
+
 def isColumnExist(company, fileName):
     if (type(company) == list):
         while(len(company) > 0):
-            return company.pop() in readSeriesFromFile(fileName).index
+            return company.pop() in readFile(fileName).index
         return False
     else:
-        return company in readSeriesFromFile(fileName).index
+        return company in readFile(fileName).index
 
 
-def readSeriesFromFile(fileName):
+def readAPIContent(content):
+    return pd.read_csv(io.StringIO(content.decode('utf-8')))
+
+
+def readJSONContent(content):
+    return json.loads(content)
+
+
+def readFile(fileName):
     try:
         return pd.read_csv(fileName, index_col=0, error_bad_lines=False, warn_bad_lines=False,)
     except Exception as x:
@@ -44,13 +60,23 @@ def readSeriesFromFile(fileName):
         return pd.DataFrame()
 
 
-def getSeriesInDF(company, fileName):
-    return readSeriesFromFile(fileName).loc[company]
+def getDF(key, fileName):
+    df = readFile(fileName)
+    if type(key) == list:
+        if all(ele in df.axes[0].values for ele in key):
+            return df.loc[key]
+        else:
+            return pd.DataFrame()
+    else:
+        if (key in df.axes[0].values):
+            return df.loc[key]
+        else:
+            return pd.DataFrame()
 
 
-def saveDFtoFile(df, company, fileName):
+def saveDFtoFile(df, key, fileName):
     df.to_csv(fileName, mode='a')
-    return df.loc[company]
+    return df.loc[key]
 
 
 def fetchUrlWithLog(url, function, urlName):
@@ -65,3 +91,11 @@ def fetchUrlWithLog(url, function, urlName):
         t1 = time.time()
         print('Took', t1 - t0, 'seconds to fetch from', urlName)
         return response.content
+
+
+def getUnixTimeStamp(firstBidTime):
+    year = int(firstBidTime[0][0])
+    month = int(firstBidTime[0][1])
+    day = int(firstBidTime[0][2])
+    d = datetime.date(year, month, day)
+    return str(int(time.mktime(d.timetuple())))

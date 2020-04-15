@@ -17,7 +17,8 @@ class Price(Super):
         self.company = kwargs.get('company')
 
     def getTreasuriesYield(self):
-        return pd.Series(self.treasuriesYieldDF.iloc[0][0]/100, index=[self.latestYear], dtype="float")
+        # pd.Series(self.treasuriesYieldDF.iloc[0][0]/100, index=[self.latestYear], dtype="float")
+        return pd.Series(self.treasuriesYieldDF.iloc[0]/100, index=[self.latestYear], dtype="float")
 
     def getDepreciation(self):
         return self.getParsSeries("Depreciation, Amortization and Depletion, Non-Cash Adjustment")

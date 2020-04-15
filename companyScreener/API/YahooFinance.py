@@ -8,7 +8,7 @@ import Config.pathConfig as pathConfig
 from pathlib import Path
 from dotenv import load_dotenv
 from CreateTables.SellDecisionTableStrategy import getBidDate
-from Worker.worker import isColumnExist, getSeriesInDF, fetchUrlWithLog, requestRetrySession, saveDFtoFile
+from Worker.worker import isColumnExist, getDF, fetchUrlWithLog, requestRetrySession, saveDFtoFile
 load_dotenv()
 
 
@@ -19,12 +19,15 @@ def getUnixTimeStamp(firstBidTime):
     d = datetime.date(year, month, day)
     return str(int(time.mktime(d.timetuple())))
 
+# TODO
+# Output Format
+
 
 def getRevenueEstimate(company, fileName=pathConfig.cache+'revenueEstimate.csv'):
     parName1 = ''.join([company, '-low'])
     parName2 = ''.join([company, '-growth'])
     if Path(fileName).is_file() and isColumnExist([parName1, parName2], fileName):
-        return getSeriesInDF([parName1, parName2], fileName)
+        return getDF([parName1, parName2], fileName)
     else:
         url = ''.join(['https://query1.finance.yahoo.com/v10/finance/quoteSummary/',
                        company, '?modules=earningsTrend'])
@@ -49,8 +52,10 @@ def getRevenueEstimate(company, fileName=pathConfig.cache+'revenueEstimate.csv')
             DF = pd.concat([forcast1YearDF, forcast2YearDF], axis=1)
             NewDF = DF.loc[['low', 'growth']].rename(
                 {'low': parName1, 'growth': parName2}, axis='index')
-            print(NewDF)
             return saveDFtoFile(NewDF, [parName1, parName2], fileName)
+
+# TODO
+# Output Format
 
 
 def getDividendRecord(company, fileName=pathConfig.cache+'dividendRecord.csv'):
@@ -58,7 +63,7 @@ def getDividendRecord(company, fileName=pathConfig.cache+'dividendRecord.csv'):
     parName2 = ''.join([company, '-date'])
     firstBidUnixTimestamp = getUnixTimeStamp([[2014, 1, 3]])
     if Path(fileName).is_file() and isColumnExist([parName1, parName2], fileName):
-        return getSeriesInDF([parName1, parName2], fileName)
+        return getDF([parName1, parName2], fileName)
     else:
         url = ''.join(['https://query1.finance.yahoo.com/v8/finance/chart/',
                        company, '?period1=', firstBidUnixTimestamp, '&period2=9999999999&interval=1d&includePrePost=false&events=div%2Csplit'])
@@ -77,6 +82,9 @@ def getDividendRecord(company, fileName=pathConfig.cache+'dividendRecord.csv'):
             print(DF)
             return saveDFtoFile(DF, [parName1, parName2], fileName)
 
+# TODO
+# Output Format
+
 
 def getMyDividendRecord(myStockDF, company, fileName=pathConfig.cache+'myDividendRecord.csv'):
     parName1 = ''.join([company, '-amount'])
@@ -84,7 +92,7 @@ def getMyDividendRecord(myStockDF, company, fileName=pathConfig.cache+'myDividen
     firstBidTime = getBidDate(myStockDF)
     firstBidUnixTimestamp = getUnixTimeStamp(firstBidTime)
     if Path(fileName).is_file() and isColumnExist([parName1, parName2], fileName):
-        return getSeriesInDF([parName1, parName2], fileName)
+        return getDF([parName1, parName2], fileName)
     else:
         url = ''.join(['https://query1.finance.yahoo.com/v8/finance/chart/',
                        company, '?period1=', firstBidUnixTimestamp, '&period2=9999999999&interval=1d&includePrePost=false&events=div%2Csplit'])

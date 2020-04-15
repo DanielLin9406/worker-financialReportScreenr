@@ -1,10 +1,9 @@
-import re
-import datetime
 import numpy as np
+import datetime
 import pandas as pd
 import Config.config as config
 from .Context import Context
-
+from Worker.dataFrameWorker import getNow, getColumnNameArr, getBidDate, getRawBid, getDurationInYear
 
 # def getNow():
 #     return datetime.datetime.now()
@@ -108,30 +107,6 @@ from .Context import Context
 #     result.at[company, 'AverageRR'] = AverageRR
 #     result.at[company, 'HPR'] = HPR
 #     return result
-
-def getNow():
-    return datetime.datetime.now()
-
-
-def getColumnNameArr(myStockDF):
-    return [ele for ele in myStockDF.columns.values if re.match("Bid/BidDate-*", ele)]
-
-
-def getBidDate(myStockDF):
-    bidDateCellArr = [myStockDF.get(bid).iloc[1]
-                      for bid in getColumnNameArr(myStockDF)]
-    return [ele.split("-") for ele in bidDateCellArr]
-
-
-def getRawBid(myStockDF):
-    return [float(myStockDF.get(bid).iloc[0][1:]) for bid in getColumnNameArr(myStockDF)]
-
-
-def getDurationInYear(now, bidDate):
-    duration = now - bidDate
-    durationInSecond = duration.total_seconds()
-    years = divmod(durationInSecond, 31536000)[0]
-    return years
 
 
 class SellDecisionStrategy:
