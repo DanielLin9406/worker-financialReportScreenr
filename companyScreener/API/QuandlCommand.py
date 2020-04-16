@@ -14,7 +14,7 @@ class FetchTreasuriesYieldCommand(APICommand):
     def __init__(self, **kwargs) -> None:
         self._company = kwargs.get('company')
         self._parName = ''.join(['treasuriesYield'])
-        self._parNameCollection = [self._parName]
+        self._parNameCollection = self._parName
         self._fileName = pathConfig.cache+'treasuriesYield.csv'
         self._url = 'ML/AAAEY'
         self._urlName = 'Yahoo Finance QuoteSummary API'

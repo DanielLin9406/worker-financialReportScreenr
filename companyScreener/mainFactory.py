@@ -1,6 +1,8 @@
-from CreateTables.TableAbstractFactory import TablesFactory, AnalyzeTablesFactory
 from Input.InputTemplate import InputTemplate1
 from InputPipeline.PipelineHandler import initHandler, leftSpaceStripHandler, transStrToFloatHandler
+from CreateTables.TableAbstractFactory import TablesFactory, AnalyzeTablesFactory
+from Output.OutputObserver import GoogleSheetObserver, PostgreSqlObserver
+from Output.OutputSubject import OutputSubject
 
 
 def createInputFactory(**kwargs):
@@ -24,4 +26,11 @@ def createTablesFactory(**kwargs):
 
 def createAnalyzeTablesFactory():
     factory = AnalyzeTablesFactory()
+    return factory
+
+
+def createOutputFactory(**kwargs):
+    factory = OutputSubject()
+    factory.attach(GoogleSheetObserver(**kwargs))
+    factory.attach(PostgreSqlObserver(**kwargs))
     return factory

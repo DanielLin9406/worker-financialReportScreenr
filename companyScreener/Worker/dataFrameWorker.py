@@ -1,5 +1,6 @@
 import re
 import datetime
+import time
 
 
 def getNow():
@@ -46,3 +47,11 @@ def getDurationInYear(now, bidDate):
     durationInSecond = duration.total_seconds()
     years = divmod(durationInSecond, 31536000)[0]
     return years
+
+
+def getUnixTimeStamp(firstBidTime):
+    year = int(firstBidTime[0][0])
+    month = int(firstBidTime[0][1])
+    day = int(firstBidTime[0][2])
+    d = datetime.date(year, month, day)
+    return str(int(time.mktime(d.timetuple())))

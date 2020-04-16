@@ -10,19 +10,21 @@ import os
 # from API.AlphaVantage import getStockPrice
 # from API.YahooFinance import getRevenueEstimate, getDividendRecord, getMyDividendRecord
 # from API.Quandl import getTreasuriesYield
-from Output.upload2Sheet import upload2Sheet
-from mainFactory import createInputFactory, createInputPipelineFactory, createTablesFactory, createAnalyzeTablesFactory
+# from Output.upload2Sheet import upload2Sheet
+from mainFactory import createInputFactory, createInputPipelineFactory, createTablesFactory, createAnalyzeTablesFactory, createOutputFactory
 
 
-def mainProcess(entry, idNum):
-    company = entry.name
-    fileIterator = os.scandir(entry.path)
+# def mainProcess(entry, idNum):
+def mainProcess(company, localFileDict, idNum):
+    # company = entry.name
+    # fileIterator = os.scandir(entry.path)
 
     # Done
     # New
     print('Step1: Create Input Factory', company)
     inputFactory = createInputFactory(**dict(
-        fileIterator=fileIterator,
+        # fileIterator=fileIterator,
+        localFileDict=localFileDict,
         company=company
     ))
     if (not inputFactory.isInputExist()):
@@ -35,8 +37,7 @@ def mainProcess(entry, idNum):
     #     return
     # rawDFDict = readReport(fileList)
     # DFDict = filterEmptyDataSource(rawDFDict)
-    # 把Company Info 加入pipeLine
-    # companyInfoDF = getCompanyAndIndustryInfo('Company', company)
+
     # DONE
     # New
     print('Step2: Create Input Pipeline Factory', company)
@@ -60,6 +61,7 @@ def mainProcess(entry, idNum):
     # Old
     # print('Step3: Create API Factory', company)
     # # priceDF = getStockPrice(company)
+    # # companyInfoDF = getCompanyAndIndustryInfo('Company', company)
     # # revenueEstimateDF = getRevenueEstimate(company)
     # # treasuriesYieldDF = getTreasuriesYield()
     # # dividendRecordDF = getDividendRecord(company)
@@ -109,11 +111,25 @@ def mainProcess(entry, idNum):
     # buyDecisionTable = createBuyDecisionTable(priceTable, scoreTable, company)
 
     print('Step5: Create Output Factory', company)
+    # New
+    outputFactory = createOutputFactory(
+        **dict(
+            idNum=idNum,
+            company=company,
+            tables=dict(
+                Pars=priceTable,
+                Price=priceTable,
+                Analysis=scoreTable,
+                BuyDecision=buyDecisionTable
+            )
+        )
+    )
+    outputFactory.uploadData()
+    # OLD
     # upload2Sheet(parsTable, 'Pars', company, idNum)
     # upload2Sheet(priceTable, 'Price', company, idNum)
-    # upload2Sheet(analyzedTable, 'Analysis', company, idNum)
+    # upload2Sheet(scoreTable, 'Analysis', company, idNum)
     # upload2Sheet(buyDecisionTable, 'BuyDecision', company, idNum)
-    # print('Finish Uploading to Google Sheet at:', company)
 
     print('Step6: Create MyStock Factory', company)
     if company not in myStockDF.axes[0].values:
@@ -140,18 +156,30 @@ def mainProcess(entry, idNum):
     # upload2Sheet(sellDecisionTable, 'SellDecision', company, idNum)
 
 
-def scanFolderTree(folder):
+# def scanFolderTree(folder):
+#     i = 7
+#     for entry in os.scandir(folder):
+#         if entry.is_dir(follow_symlinks=False):
+#             mainProcess(entry, i)
+#             i = i+1
+
+# def main(path):
+#     path = os.path.expanduser("~/FinancialData")
+#     scanFolderTree(path)
+
+def getLocalFileDict():
+    filePath = os.path.expanduser("~/FinancialData")
+    return {file.name: dict(fileIterator=os.scandir(file.path)) for file in os.scandir(
+        filePath) if not file.name.startswith('.')}
+
+
+def main(companyList=['V']):
     i = 7
-    for entry in os.scandir(folder):
-        if entry.is_dir(follow_symlinks=False):
-            mainProcess(entry, i)
-            i = i+1
-
-
-def main(path):
-    scanFolderTree(path)
+    localFileDict = getLocalFileDict()
+    for company in companyList:
+        mainProcess(company, localFileDict, i)
+        i = i+1
 
 
 if __name__ == '__main__':
-    path = os.path.expanduser("~/FinancialData")
-    main(path)
+    main()

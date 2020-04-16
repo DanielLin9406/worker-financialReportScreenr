@@ -17,6 +17,7 @@ class Price(Super):
         self.company = kwargs.get('company')
 
     def getTreasuriesYield(self):
+        print('treasuriesYield', self.treasuriesYieldDF.iloc[0]/100)
         # pd.Series(self.treasuriesYieldDF.iloc[0][0]/100, index=[self.latestYear], dtype="float")
         return pd.Series(self.treasuriesYieldDF.iloc[0]/100, index=[self.latestYear], dtype="float")
 

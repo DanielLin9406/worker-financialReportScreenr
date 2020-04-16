@@ -1,9 +1,10 @@
-import Config.pathConfig as pathConfig
+from oauth2client.service_account import ServiceAccountCredentials
 import re
 import gspread
 import pandas as pd
 import numpy as np
-from oauth2client.service_account import ServiceAccountCredentials
+import Config.pathConfig as pathConfig
+from API.APICommand import APICommand
 
 scope = ["https://spreadsheets.google.com/feeds",
          "https://www.googleapis.com/auth/spreadsheets",
@@ -19,7 +20,7 @@ class GoogleAPICommand:
         return client.open(self._sheetName).worksheet(self._sheetTabName)
 
     def getDataFromGoogleSheet(self):
-        ws = openSheet(self._sheetName, self._sheetTabName)
+        ws = self.openSheet()
         return ws.get_all_values()
 
 
@@ -27,28 +28,34 @@ class FetchCompanyAndIndustryInfoCommand(APICommand, GoogleAPICommand):
     def __init__(self, **kwargs) -> None:
         self._company = kwargs.get('company')
         self._parName = ''.join([self._company])
+        self._parNameCollection = self._parName
         self._fileName = pathConfig.cache+'company.csv'
         self._sheetName = "Stock"
         self._sheetTabName = 'Company'
+        self._url = self._sheetName
+        self._urlName = self._sheetTabName
 
     def getCompanySheet(self, data):
         df = pd.DataFrame(data[1:], columns=data[0])
         return df.set_index('Name')
 
     def fetchDataViaAPI(self, url, urlName):
-        return self.getDataFromGoogleSheet(self.sheetName, self.sheetTabName)
+        return self.getDataFromGoogleSheet()
 
     def APICallback(self, content):
-        return getCompanySheet(content)
+        return self.getCompanySheet(content)
 
 
 class FetchMyStockCommand(APICommand, GoogleAPICommand):
     def __init__(self, **kwargs) -> None:
         self._company = kwargs.get('company')
         self._parName = ''.join([self._company])
+        self._parNameCollection = self._parName
         self._fileName = pathConfig.cache+'myStock.csv'
         self._sheetName = "Stock"
         self._sheetTabName = 'MyStock'
+        self._url = self._sheetName
+        self._urlName = self._sheetTabName
 
     def getName(self, bidArr):
         result = []
@@ -58,17 +65,17 @@ class FetchMyStockCommand(APICommand, GoogleAPICommand):
             i = i + 1
         return result
 
-    def getMyStockSheet(self, sheetTabName, data):
+    def getMyStock(self, data):
         bidArr = [ele for ele in data[4] if re.match("Bid/BidDate-*", ele)]
         columnList = []
         columnList.extend(['Company', 'Own Shares'])
-        columnList.extend(getName(bidArr))
+        columnList.extend(self.getName(bidArr))
         df = pd.DataFrame(data[6:, 1:], columns=columnList)
         return df.set_index('Company')
 
     def fetchDataViaAPI(self, url, urlName):
-        return self.getDataFromGoogleSheet(self.sheetName, self.sheetTabName)
+        return self.getDataFromGoogleSheet()
 
     def APICallback(self, content):
-        df = getMyStockSheet(self.sheetTabName, np.array(content))
+        df = self.getMyStock(np.array(content))
         return df

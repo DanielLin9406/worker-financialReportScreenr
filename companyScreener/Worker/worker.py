@@ -1,6 +1,7 @@
 from Worker.logger import dumpArgs
 import time
 import io
+import copy
 import pandas as pd
 import datetime
 import numpy as np
@@ -35,13 +36,14 @@ def isCacheExist(key, fileName):
     return Path(fileName).is_file() and isColumnExist(key, fileName)
 
 
-def isColumnExist(company, fileName):
-    if (type(company) == list):
-        while(len(company) > 0):
-            return company.pop() in readFile(fileName).index
+def isColumnExist(key, fileName):
+    key = copy.deepcopy(key)
+    if (type(key) == list):
+        while(len(key) > 0):
+            return key.pop() in readFile(fileName).index
         return False
     else:
-        return company in readFile(fileName).index
+        return key in readFile(fileName).index
 
 
 def readAPIContent(content):
@@ -64,6 +66,7 @@ def getDF(key, fileName):
     df = readFile(fileName)
     if type(key) == list:
         if all(ele in df.axes[0].values for ele in key):
+            # print(fileName, df.loc[key])
             return df.loc[key]
         else:
             return pd.DataFrame()
@@ -91,11 +94,3 @@ def fetchUrlWithLog(url, function, urlName):
         t1 = time.time()
         print('Took', t1 - t0, 'seconds to fetch from', urlName)
         return response.content
-
-
-def getUnixTimeStamp(firstBidTime):
-    year = int(firstBidTime[0][0])
-    month = int(firstBidTime[0][1])
-    day = int(firstBidTime[0][2])
-    d = datetime.date(year, month, day)
-    return str(int(time.mktime(d.timetuple())))

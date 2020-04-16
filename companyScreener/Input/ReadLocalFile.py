@@ -3,7 +3,11 @@ import pandas as pd
 
 class ReadLocalFile:
     def __init__(self, **kwargs):
-        self._fileList = self.iterator2List(kwargs.get('fileIterator'))
+        self._company = kwargs.get('company')
+        self._localFileDict = kwargs.get('localFileDict')
+        self._fileIterator = self._localFileDict.get(
+            self._company).get('fileIterator')
+        self._fileList = self.iterator2List(self._fileIterator)
         self.setData()
 
     def iterator2List(self, fileIterator):

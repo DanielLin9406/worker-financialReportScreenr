@@ -11,7 +11,6 @@ quandl.ApiConfig.api_key = os.getenv("QUANDL_API_KEY")
 
 def getTreasuriesYield(fileName=pathConfig.cache+'treasuriesYield.csv'):
     parName = ''.join(['treasuriesYield'])
-    df = quandl.get("ML/AAAEY").sort_index(ascending=False)
     if Path(fileName).is_file() and isColumnExist(parName, fileName):
         # if file exist read from file
         return getDF(parName, fileName)

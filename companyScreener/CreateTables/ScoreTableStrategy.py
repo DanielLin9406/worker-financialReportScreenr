@@ -363,7 +363,7 @@ class CalculateScoreStrategy:
         company = kwargs.get('company')
         parsTable = kwargs.get('parsTable')
         for test in criteriaSetting.criteria[listName]:
-            score = self.getScoreWrapper(company, test, parsTable)
+            score = int(self.getScoreWrapper(company, test, parsTable))
             self.setScoreDF(company, test, score)
             self.setScoreDFList(test, score)
 

@@ -22,7 +22,7 @@ class FetchStockPriceCommand(APICommand):
 
     def APICallback(self, content):
         try:
-            df = pd.read_csv(io.StringIO(content.decode('utf-8')))
+            df = self.readCSVAsDF(content)
         except Exception as x:
             print('JSON Parse failed when getting dividend :(',
                   x.__class__.__name__)

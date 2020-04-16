@@ -2,7 +2,7 @@ import json
 import pandas as pd
 import Config.pathConfig as pathConfig
 from API.APICommand import APICommand
-from Worker.worker import getUnixTimeStamp, getBidDate
+from Worker.dataFrameWorker import getUnixTimeStamp, getBidDate
 
 
 class FetchRevenueEstimateCommand(APICommand):
@@ -43,7 +43,7 @@ class FetchDividendRecordCommand(APICommand):
         self._parNameCollection = [self._parName1, self._parName2]
         self._firstBidUnixTimestamp = getUnixTimeStamp([[2014, 1, 3]])
         self._fileName = pathConfig.cache+'dividendRecord.csv'
-        self._url = f'https://query1.finance.yahoo.com/v8/finance/chart/{self._company}?period1={firstBidUnixTimestamp}&period2=9999999999&interval=1d&includePrePost=false&events=div%2Csplit'
+        self._url = f'https://query1.finance.yahoo.com/v8/finance/chart/{self._company}?period1={self._firstBidUnixTimestamp}&period2=9999999999&interval=1d&includePrePost=false&events=div%2Csplit'
         self._urlName = 'Yahoo Finance Chart API'
 
     def APICallback(self, content):
