@@ -190,9 +190,9 @@ def PriceTable(**kwargs):
     return pd.concat(result, axis=1)
 
 
-# def createPriceDF(combinedDF, priceDF, treasuriesYieldDF, revenueEstimateDF, company):
+# def createPriceDF(reportsDF, priceDF, treasuriesYieldDF, revenueEstimateDF, company):
 #     priceInstance = Price(**dict(
-#         combinedDF=combinedDF,
+#         reportsDF=reportsDF,
 #         priceDF=priceDF,
 #         treasuriesYieldDF=treasuriesYieldDF,
 #         revenueEstimateDF=revenueEstimateDF,
@@ -202,9 +202,9 @@ def PriceTable(**kwargs):
 #     return priceInstance.getOutput()
 
 
-# def createDDMDF(combinedDF, priceDF, treasuriesYieldDF, revenueEstimateDF, company, instanceDict):
+# def createDDMDF(reportsDF, priceDF, treasuriesYieldDF, revenueEstimateDF, company, instanceDict):
 #     ddmInstance = DDM(**dict(
-#         combinedDF=combinedDF,
+#         reportsDF=reportsDF,
 #         priceDF=priceDF,
 #         treasuriesYieldDF=treasuriesYieldDF,
 #         revenueEstimateDF=revenueEstimateDF,
@@ -218,9 +218,9 @@ def PriceTable(**kwargs):
 #     return ddmInstance.getOutput()
 
 
-# def createDDM2DF(combinedDF, priceDF, treasuriesYieldDF, revenueEstimateDF, company, instanceDict):
+# def createDDM2DF(reportsDF, priceDF, treasuriesYieldDF, revenueEstimateDF, company, instanceDict):
 #     ddm2Instance = DDM2(**dict(
-#         combinedDF=combinedDF,
+#         reportsDF=reportsDF,
 #         priceDF=priceDF,
 #         treasuriesYieldDF=treasuriesYieldDF,
 #         revenueEstimateDF=revenueEstimateDF,
@@ -236,9 +236,9 @@ def PriceTable(**kwargs):
 #     return ddm2Instance.getOutput()
 
 
-# def createDDMHDF(combinedDF, priceDF, treasuriesYieldDF, revenueEstimateDF, company, instanceDict):
+# def createDDMHDF(reportsDF, priceDF, treasuriesYieldDF, revenueEstimateDF, company, instanceDict):
 #     ddmHInstance = DDMH(**dict(
-#         combinedDF=combinedDF,
+#         reportsDF=reportsDF,
 #         priceDF=priceDF,
 #         treasuriesYieldDF=treasuriesYieldDF,
 #         revenueEstimateDF=revenueEstimateDF,
@@ -254,14 +254,14 @@ def PriceTable(**kwargs):
 #     return ddmHInstance.getOutput()
 
 
-# # def createFCFFDF(combinedDF, priceDF, treasuriesYieldDF, revenueEstimateDF, company):
-# #     fcffHInstance = FCFF(combinedDF, priceDF, treasuriesYieldDF, revenueEstimateDF, company)
+# # def createFCFFDF(reportsDF, priceDF, treasuriesYieldDF, revenueEstimateDF, company):
+# #     fcffHInstance = FCFF(reportsDF, priceDF, treasuriesYieldDF, revenueEstimateDF, company)
 # #     # fcffHInstance.setStockPriceFCFF()
 
 
-# def createFCFEDF(combinedDF, priceDF, treasuriesYieldDF, revenueEstimateDF, company, instanceDict):
+# def createFCFEDF(reportsDF, priceDF, treasuriesYieldDF, revenueEstimateDF, company, instanceDict):
 #     fcfeInstance = FCFE(**dict(
-#         combinedDF=combinedDF,
+#         reportsDF=reportsDF,
 #         priceDF=priceDF,
 #         treasuriesYieldDF=treasuriesYieldDF,
 #         revenueEstimateDF=revenueEstimateDF,
@@ -276,9 +276,9 @@ def PriceTable(**kwargs):
 #     return fcfeInstance.getOutput()
 
 
-# def createDCFDF(combinedDF, priceDF, treasuriesYieldDF, revenueEstimateDF, company, instanceDict):
+# def createDCFDF(reportsDF, priceDF, treasuriesYieldDF, revenueEstimateDF, company, instanceDict):
 #     dcfInstance = DCF(**dict(
-#         combinedDF=combinedDF,
+#         reportsDF=reportsDF,
 #         priceDF=priceDF,
 #         treasuriesYieldDF=treasuriesYieldDF,
 #         revenueEstimateDF=revenueEstimateDF,
@@ -296,9 +296,9 @@ def PriceTable(**kwargs):
 #     return dcfInstance.getOutput()
 
 
-# def createGrahamDF(combinedDF, priceDF, treasuriesYieldDF, revenueEstimateDF, company, instanceDict):
+# def createGrahamDF(reportsDF, priceDF, treasuriesYieldDF, revenueEstimateDF, company, instanceDict):
 #     grahamInstance = Graham(**dict(
-#         combinedDF=combinedDF,
+#         reportsDF=reportsDF,
 #         priceDF=priceDF,
 #         treasuriesYieldDF=treasuriesYieldDF,
 #         revenueEstimateDF=revenueEstimateDF,
@@ -311,9 +311,9 @@ def PriceTable(**kwargs):
 #     return grahamInstance.getOutput()
 
 
-# def createEBTDF(combinedDF, priceDF, treasuriesYieldDF, revenueEstimateDF, company, instanceDict):
+# def createEBTDF(reportsDF, priceDF, treasuriesYieldDF, revenueEstimateDF, company, instanceDict):
 #     ebtInstance = EBT(**dict(
-#         combinedDF=combinedDF,
+#         reportsDF=reportsDF,
 #         priceDF=priceDF,
 #         treasuriesYieldDF=treasuriesYieldDF,
 #         revenueEstimateDF=revenueEstimateDF,
@@ -325,9 +325,9 @@ def PriceTable(**kwargs):
 #     return ebtInstance.getOutput()
 
 
-# def createAvgPriceDF(combinedDF, priceDF, treasuriesYieldDF, revenueEstimateDF, company, instanceDict):
+# def createAvgPriceDF(reportsDF, priceDF, treasuriesYieldDF, revenueEstimateDF, company, instanceDict):
 #     avgPriceInstance = AvgPrice(**dict(
-#         combinedDF=combinedDF,
+#         reportsDF=reportsDF,
 #         priceDF=priceDF,
 #         treasuriesYieldDF=treasuriesYieldDF,
 #         revenueEstimateDF=revenueEstimateDF,
@@ -348,9 +348,9 @@ def PriceTable(**kwargs):
 #     return avgPriceInstance.getOutput()
 
 
-# def createValueDF(combinedDF, priceDF, treasuriesYieldDF, revenueEstimateDF, company):
+# def createValueDF(reportsDF, priceDF, treasuriesYieldDF, revenueEstimateDF, company):
 #     valueInstance = Value(**dict(
-#         combinedDF=combinedDF,
+#         reportsDF=reportsDF,
 #         priceDF=priceDF,
 #         treasuriesYieldDF=treasuriesYieldDF,
 #         revenueEstimateDF=revenueEstimateDF,
@@ -364,28 +364,28 @@ def PriceTable(**kwargs):
 #     return valueInstance.getOutput()
 
 
-# def createPriceTable(combinedDF, priceDF, treasuriesYieldDF, revenueEstimateDF, company):
+# def createPriceTable(reportsDF, priceDF, treasuriesYieldDF, revenueEstimateDF, company):
 #     instanceDict = dict(
 #         valueInvesement=dict(),
 #         growthInvesement=dict(),
 #     )
 
-#     return pd.concat([createPriceDF(combinedDF, priceDF, treasuriesYieldDF, revenueEstimateDF, company),
-#                       createDDMDF(combinedDF, priceDF, treasuriesYieldDF, revenueEstimateDF,
+#     return pd.concat([createPriceDF(reportsDF, priceDF, treasuriesYieldDF, revenueEstimateDF, company),
+#                       createDDMDF(reportsDF, priceDF, treasuriesYieldDF, revenueEstimateDF,
 #                                   company, instanceDict),
-#                       createDDM2DF(combinedDF, priceDF, treasuriesYieldDF, revenueEstimateDF,
+#                       createDDM2DF(reportsDF, priceDF, treasuriesYieldDF, revenueEstimateDF,
 #                                    company, instanceDict),
-#                       createDDMHDF(combinedDF, priceDF, treasuriesYieldDF, revenueEstimateDF,
+#                       createDDMHDF(reportsDF, priceDF, treasuriesYieldDF, revenueEstimateDF,
 #                                    company, instanceDict),
-#                       createFCFEDF(combinedDF, priceDF, treasuriesYieldDF, revenueEstimateDF,
+#                       createFCFEDF(reportsDF, priceDF, treasuriesYieldDF, revenueEstimateDF,
 #                                    company, instanceDict),
-#                       createDCFDF(combinedDF, priceDF, treasuriesYieldDF, revenueEstimateDF,
+#                       createDCFDF(reportsDF, priceDF, treasuriesYieldDF, revenueEstimateDF,
 #                                   company, instanceDict),
-#                       createGrahamDF(combinedDF, priceDF, treasuriesYieldDF, revenueEstimateDF,
+#                       createGrahamDF(reportsDF, priceDF, treasuriesYieldDF, revenueEstimateDF,
 #                                      company, instanceDict),
-#                       createEBTDF(combinedDF, priceDF, treasuriesYieldDF, revenueEstimateDF,
+#                       createEBTDF(reportsDF, priceDF, treasuriesYieldDF, revenueEstimateDF,
 #                                   company, instanceDict),
-#                       createAvgPriceDF(combinedDF, priceDF, treasuriesYieldDF, revenueEstimateDF,
+#                       createAvgPriceDF(reportsDF, priceDF, treasuriesYieldDF, revenueEstimateDF,
 #                                        company, instanceDict),
-#                       createValueDF(combinedDF, priceDF, treasuriesYieldDF, revenueEstimateDF,
+#                       createValueDF(reportsDF, priceDF, treasuriesYieldDF, revenueEstimateDF,
 #                                     company), ], axis=1)

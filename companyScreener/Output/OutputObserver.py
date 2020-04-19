@@ -9,6 +9,9 @@ class Observer(ABC):
     def upload(self, subject: Subject) -> None:
         pass
 
+    def isValueNone(self, value):
+        return value is not None
+
 
 class GoogleSheetObserver(Observer):
     def __init__(self, **kwargs):
@@ -17,13 +20,14 @@ class GoogleSheetObserver(Observer):
         self._idNum = self._kwargs.get('idNum')
 
     def upload(self, subject: Subject) -> None:
-        for key, value in self._kwargs["tables"].items():
-            OutPutToGoogleSheet(**dict(
-                df=value,
-                sheetTabName=key,
-                idNum=self._idNum,
-                company=self._company
-            )).uploadData()
+        for key, df in self._kwargs["tables"].items():
+            if self.isValueNone(df):
+                OutPutToGoogleSheet(**dict(
+                    df=df,
+                    sheetTabName=key,
+                    idNum=self._idNum,
+                    company=self._company
+                )).uploadData()
 
 
 class PostgreSqlObserver(Observer):

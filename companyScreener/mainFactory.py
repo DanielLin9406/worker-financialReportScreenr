@@ -30,7 +30,7 @@ def createAnalyzeTablesFactory():
 
 
 def createOutputFactory(**kwargs):
-    factory = OutputSubject()
-    factory.attach(GoogleSheetObserver(**kwargs))
-    factory.attach(PostgreSqlObserver(**kwargs))
-    return factory
+    shuttle = OutputSubject()
+    shuttle.attach(GoogleSheetObserver(**kwargs))
+    shuttle.attach(PostgreSqlObserver(**kwargs))
+    return shuttle

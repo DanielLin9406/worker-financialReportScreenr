@@ -1,21 +1,24 @@
 from abc import ABC, abstractmethod, abstractproperty
 from Input.ReadLocalFile import ReadLocalFile
 from API.APIMediator import APIMediator, APINotify
-# from API.GoogleSheet import getCompanyAndIndustryInfo, getMyStock
-# from API.Quandl import getTreasuriesYield
-# from API.AlphaVantage import getStockPrice
-# from API.YahooFinance import getRevenueEstimate, getDividendRecord, getMyDividendRecord
 
 
 class DataFetcherCollection:
     def __init__(self, **kwargs):
         self._kwargs = kwargs
-        self._localFileInstance = self._kwargs.get('localFileInstance')
-        self._APINotifyInstance = self._kwargs.get('apiNotifyInstance')
+
+    def initReadLocalFile(self):
+        self._localFileInstance = ReadLocalFile(**self._kwargs)
+
+    def initAPIMediator(self):
+        self._APINotifyInstance = APINotify()
+        APIMediator(**self._kwargs, **dict(
+            apiNotifyInstance=self._APINotifyInstance,
+        ))
 
     def loadTemplate1(self):
         return dict(
-            combinedDF=self.readLocalFileDF(),
+            reportsDF=self.readLocalFileDF(),
             companyInfoDF=self.readCompanyInfo(),
             priceDF=self.readStockPrice(),
             revenueEstimateDF=self.readRevenueEstimate(),
@@ -31,6 +34,7 @@ class DataFetcherCollection:
         )
 
     def readLocalFileDF(self):
+        self._localFileInstance = ReadLocalFile(**self._kwargs)
         return self._localFileInstance.getData()
 
     def readStockPrice(self):
@@ -72,38 +76,27 @@ class DataFetcherCollection:
 
 class InputTemplate1(DataFetcherCollection):
     def __init__(self, **kwargs):
-        self._kwargs = kwargs
-        self.initReadLocalFile()
-        self.initAPIMediator()
-        super().__init__(**kwargs, **dict(
-            localFileInstance=self._localFileInstance,
-            apiNotifyInstance=self._APINotifyInstance
-        ))
+        super().__init__(**kwargs)
+        super().initReadLocalFile()
+        super().initAPIMediator()
 
-    def initReadLocalFile(self):
-        self._localFileInstance = ReadLocalFile(**self._kwargs)
+    def setMainData(self):
+        self._mainData = 'LocalFile'
 
-    def initAPIMediator(self):
-        self._APINotifyInstance = APINotify()
-        APIMediator(**self._kwargs, **dict(
-            apiNotifyInstance=self._APINotifyInstance,
-        ))
-
-    def isInputExist(self):
-        instance = self._localFileInstance
-        return instance.isInputExist()
+    def isMainDataExist(self):
+        return self._localFileInstance.isFileExist()
 
 
-class InputTemplate2(DataFetcherCollection):
-    def __init__(self, **kwargs):
-        self._kwargs = kwargs
-        self.initAPIMediator()
-        super().__init__(**kwargs, **dict(
-            apiNotifyInstance=self._APINotifyInstance
-        ))
+# class InputTemplate2(DataFetcherCollection):
+#     def __init__(self, **kwargs):
+#         self._kwargs = kwargs
+#         self.initAPIMediator()
+#         super().__init__(**kwargs, **dict(
+#             apiNotifyInstance=self._APINotifyInstance
+#         ))
 
-    def initAPIMediator(self):
-        self._APINotifyInstance = APINotify()
-        APIMediator(**self._kwargs, **dict(
-            apiNotifyInstance=self._APINotifyInstance,
-        ))
+#     def initAPIMediator(self):
+#         self._APINotifyInstance = APINotify()
+#         APIMediator(**self._kwargs, **dict(
+#             apiNotifyInstance=self._APINotifyInstance,
+#         ))

@@ -7,17 +7,16 @@ from .AvgPrice import AvgPrice
 
 class Price(Super):
     def __init__(self, **kwargs):
-        thisYear = kwargs.get('combinedDF').columns[0]
+        thisYear = kwargs.get('reportsDF').columns[0]
         super().__init__(thisYear)
         self.colName = config.PriceName
-        self.combinedDF = kwargs.get('combinedDF')
+        self.reportsDF = kwargs.get('reportsDF')
         self.priceDF = kwargs.get('priceDF')
         self.treasuriesYieldDF = kwargs.get('treasuriesYieldDF')
         self.revenueEstimateDF = kwargs.get('revenueEstimateDF')
         self.company = kwargs.get('company')
 
     def getTreasuriesYield(self):
-        print('treasuriesYield', self.treasuriesYieldDF.iloc[0]/100)
         # pd.Series(self.treasuriesYieldDF.iloc[0][0]/100, index=[self.latestYear], dtype="float")
         return pd.Series(self.treasuriesYieldDF.iloc[0]/100, index=[self.latestYear], dtype="float")
 

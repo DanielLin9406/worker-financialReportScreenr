@@ -12,7 +12,7 @@ class FetchRevenueEstimateCommand(APICommand):
         self._parName2 = ''.join([self._company, '-growth'])
         self._parNameCollection = [self._parName1, self._parName2]
         self._fileName = pathConfig.cache+'revenueEstimate.csv'
-        self._url = 'https://query1.finance.yahoo.com/v10/finance/quoteSummary/%s?modules=earningsTrend' % self._company
+        self._url = f'https://query1.finance.yahoo.com/v10/finance/quoteSummary/{self._company}?modules=earningsTrend'
         self._urlName = 'Yahoo Finance QuoteSummary API'
 
     def APICallback(self, content):

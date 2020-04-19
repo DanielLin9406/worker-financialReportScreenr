@@ -116,9 +116,9 @@ def ParsTable(**kwargs):
 
     return pd.concat(result, axis=1)
 
-# def createIndustryInfo(combinedDF, parsDFList, company):
+# def createIndustryInfo(reportsDF, parsDFList, company):
 #     industryInstance = Industry(**dict(
-#         combinedDF=combinedDF,
+#         reportsDF=reportsDF,
 #         parsDFList=parsDFList,
 #         company=company
 #     ))
@@ -128,9 +128,9 @@ def ParsTable(**kwargs):
 #     return industryInstance.getOutput()
 
 
-# def createDividendDF(combinedDF, parsDFList, company):
+# def createDividendDF(reportsDF, parsDFList, company):
 #     dividendInstance = Dividend(**dict(
-#         combinedDF=combinedDF,
+#         reportsDF=reportsDF,
 #         parsDFList=parsDFList,
 #         company=company
 #     ))
@@ -147,9 +147,9 @@ def ParsTable(**kwargs):
 #     return dividendInstance.getOutput()
 
 
-# def createProfitDF(combinedDF, parsDFList, company):
+# def createProfitDF(reportsDF, parsDFList, company):
 #     profitInstance = Profit(**dict(
-#         combinedDF=combinedDF,
+#         reportsDF=reportsDF,
 #         parsDFList=parsDFList,
 #         company=company
 #     ))
@@ -167,9 +167,9 @@ def ParsTable(**kwargs):
 #     return profitInstance.getOutput()
 
 
-# def createGrowthDF(combinedDF, parsDFList, company):
+# def createGrowthDF(reportsDF, parsDFList, company):
 #     growthInstance = Growth(**dict(
-#         combinedDF=combinedDF,
+#         reportsDF=reportsDF,
 #         parsDFList=parsDFList,
 #         company=company
 #     ))
@@ -188,9 +188,9 @@ def ParsTable(**kwargs):
 #     return growthInstance.getOutput()
 
 
-# def createSafetyDF(combinedDF, parsDFList, company):
+# def createSafetyDF(reportsDF, parsDFList, company):
 #     safetyInstance = Safety(**dict(
-#         combinedDF=combinedDF,
+#         reportsDF=reportsDF,
 #         parsDFList=parsDFList,
 #         company=company
 #     ))
@@ -209,10 +209,10 @@ def ParsTable(**kwargs):
 #     return safetyInstance.getOutput()
 
 
-# def createParsTable(combinedDF, parsDFList, company):
+# def createParsTable(reportsDF, parsDFList, company):
 #     return pd.concat([
-#         createIndustryInfo(combinedDF, parsDFList, company),
-#         createDividendDF(combinedDF, parsDFList, company),
-#         createProfitDF(combinedDF, parsDFList, company),
-#         createGrowthDF(combinedDF, parsDFList, company),
-#         createSafetyDF(combinedDF, parsDFList, company)], axis=1)
+#         createIndustryInfo(reportsDF, parsDFList, company),
+#         createDividendDF(reportsDF, parsDFList, company),
+#         createProfitDF(reportsDF, parsDFList, company),
+#         createGrowthDF(reportsDF, parsDFList, company),
+#         createSafetyDF(reportsDF, parsDFList, company)], axis=1)

@@ -85,11 +85,11 @@ class Super:
 
     def getParsSeries(self, parNamePool, alterNative=None):
         def checkSeriesInDF(parName):
-            return parName in self.combinedDF.index
+            return parName in self.reportsDF.index
 
         def getSeriesFromDF(parName):
-            if parName in self.combinedDF.index:
-                return self.combinedDF.loc[parName]
+            if parName in self.reportsDF.index:
+                return self.reportsDF.loc[parName]
 
         def getSeriesFromPlanB(alterNative):
             if alterNative is not None:

@@ -6,7 +6,7 @@ from .Super import Super
 
 class AvgPrice(Super):
     def __init__(self, **kwargs):
-        thisYear = kwargs.get('combinedDF').columns[0]
+        thisYear = kwargs.get('reportsDF').columns[0]
         super().__init__(thisYear)
         self.colName = config.PriceName
         self.priceDF = kwargs.get('priceDF')

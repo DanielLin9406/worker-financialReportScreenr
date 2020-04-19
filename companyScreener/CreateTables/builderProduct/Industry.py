@@ -5,10 +5,10 @@ from .Super import Super
 
 class Industry(Super):
     def __init__(self, **kwargs):
-        thisYear = kwargs.get('combinedDF').columns[0]
+        thisYear = kwargs.get('reportsDF').columns[0]
         Super.__init__(self, thisYear)
         self.colName = config.IndustryName
-        self.combinedDF = kwargs.get('combinedDF')
+        self.reportsDF = kwargs.get('reportsDF')
         self.priceDF = kwargs.get('priceDF')
         self.companyInfoDF = kwargs.get('companyInfoDF')
         self.company = kwargs.get('company')

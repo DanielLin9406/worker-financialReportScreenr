@@ -1,50 +1,26 @@
 import os
-# import pathlib as plib
-# import pandas as pd
-# import numpy as np
-# import time
-# from CreateTables.ScoreTableStrategy import createAnalyzeTable  # ,  # AnalyzeTable
-# from CreateTables.BuyDecisionTableStrategy import createBuyDecisionTable
-# from CreateTables.SellDecisionTableStrategy import createSellDecisionTable
-# from API.GoogleSheet import getCompanyAndIndustryInfo, getMyStock
-# from API.AlphaVantage import getStockPrice
-# from API.YahooFinance import getRevenueEstimate, getDividendRecord, getMyDividendRecord
-# from API.Quandl import getTreasuriesYield
-# from Output.upload2Sheet import upload2Sheet
+from API.APICommand import CommandInvoker
+from API.GoogleSheetCommand import FetchCompanyAndIndustryInfoCommand
 from mainFactory import createInputFactory, createInputPipelineFactory, createTablesFactory, createAnalyzeTablesFactory, createOutputFactory
 
 
-# def mainProcess(entry, idNum):
 def mainProcess(company, localFileDict, idNum):
-    # company = entry.name
-    # fileIterator = os.scandir(entry.path)
-
-    # Done
-    # New
-    print('Step1: Create Input Factory', company)
     inputFactory = createInputFactory(**dict(
-        # fileIterator=fileIterator,
         localFileDict=localFileDict,
         company=company
     ))
-    if (not inputFactory.isInputExist()):
+    print(f'Step0: Check Local File Of {company} Exist')
+    if (not inputFactory.isMainDataExist()):
         return
+
+    print(f'Step1: Load {company} Input Data')
     rawDataDict = inputFactory.loadTemplate1()
-    # rawDataDict: {'CombinedDF': DF, 'PriceDF': DF, ...}
-    # OLD
-    # fileList = transIterator2FileList(fileIterator)
-    # if (len(fileList) == 0):
-    #     return
-    # rawDFDict = readReport(fileList)
-    # DFDict = filterEmptyDataSource(rawDFDict)
 
-    # DONE
-    # New
-    print('Step2: Create Input Pipeline Factory', company)
+    print(f'Step2: Run {company} Data Pipeline')
     inputPipelineFactory = createInputPipelineFactory()
-    standardDF = inputPipelineFactory.handle(rawDataDict['combinedDF'])
+    reportsDF = inputPipelineFactory.handle(rawDataDict['reportsDF'])
 
-    print('Step2-1: Dump RawData Dict', company)
+    print(f'Step2-1: Dump {company} RawData Dict')
     companyInfoDF = rawDataDict['companyInfoDF']
     priceDF = rawDataDict['priceDF']
     revenueEstimateDF = rawDataDict['revenueEstimateDF']
@@ -53,25 +29,10 @@ def mainProcess(company, localFileDict, idNum):
     myStockDF = rawDataDict['myStockDF']
     myDividendRecorDF = rawDataDict['myDividendRecorDF']
 
-    # Old
-    # standardDF = cleanDataWorker(DFDict)
-    # print('old', standardDF)
-
-    # Done
-    # Old
-    # print('Step3: Create API Factory', company)
-    # # priceDF = getStockPrice(company)
-    # # companyInfoDF = getCompanyAndIndustryInfo('Company', company)
-    # # revenueEstimateDF = getRevenueEstimate(company)
-    # # treasuriesYieldDF = getTreasuriesYield()
-    # # dividendRecordDF = getDividendRecord(company)
-
-    # Done
-    # NEW
-    print('Step3: Create Level 1 Tables Factory', company)
+    print(f'Step3: Create {company} Level 1 Tables')
     tablesFactory = createTablesFactory(
         **dict(
-            combinedDF=standardDF,
+            reportsDF=reportsDF,
             priceDF=priceDF,
             companyInfoDF=companyInfoDF,
             treasuriesYieldDF=treasuriesYieldDF,
@@ -81,15 +42,8 @@ def mainProcess(company, localFileDict, idNum):
     )
     parsTable = tablesFactory.createParsTable()
     priceTable = tablesFactory.createPriceTable()
-    # OLD
-    # parsTable = createParsTable(
-    #     standardDF, [priceDF, companyInfoDF], company)
-    # priceTable = createPriceTable(
-    #     standardDF, priceDF, treasuriesYieldDF, revenueEstimateDF, company)
 
-    # Done
-    print('Step4: Create Level 2 Tables Factory', company)
-    # New
+    print(f'Step4: Create {company} Level 2 Tables')
     analyzeTablesFactory = createAnalyzeTablesFactory()
     scoreTable = analyzeTablesFactory.createScoreTable(
         **dict(
@@ -104,79 +58,58 @@ def mainProcess(company, localFileDict, idNum):
             company=company
         )
     )
-    # print('new scoreTable', scoreTable)
-    # print('new buyDecisionTable', buyDecisionTable)
-    # OLD
-    # scoreTable = createAnalyzeTable(parsTable, company)
-    # buyDecisionTable = createBuyDecisionTable(priceTable, scoreTable, company)
+    print(f'Step5: Create {company} MyStock Table')
+    if company in myStockDF.axes[0].values:
+        sellDecisionTable = analyzeTablesFactory.createSellDecisionTable(
+            **dict(
+                scoreTable=scoreTable,
+                priceTable=priceTable,
+                company=company,
+                myStockDF=myStockDF,
+                myDividendRecorDF=myDividendRecorDF
+            )
+        )
+    else:
+        sellDecisionTable = None
 
-    print('Step5: Create Output Factory', company)
-    # New
+    print(f'Step6: Upload {company} Data to Cloud')
     outputFactory = createOutputFactory(
         **dict(
             idNum=idNum,
             company=company,
             tables=dict(
-                Pars=priceTable,
+                Pars=parsTable,
                 Price=priceTable,
                 Analysis=scoreTable,
-                BuyDecision=buyDecisionTable
+                BuyDecision=buyDecisionTable,
+                SellDecision=sellDecisionTable
             )
         )
     )
     outputFactory.uploadData()
-    # OLD
-    # upload2Sheet(parsTable, 'Pars', company, idNum)
-    # upload2Sheet(priceTable, 'Price', company, idNum)
-    # upload2Sheet(scoreTable, 'Analysis', company, idNum)
-    # upload2Sheet(buyDecisionTable, 'BuyDecision', company, idNum)
 
-    print('Step6: Create MyStock Factory', company)
-    if company not in myStockDF.axes[0].values:
-        return
-
-    # Done
-    # New
-    sellDecisionTable = analyzeTablesFactory.createSellDecisionTable(
-        **dict(
-            scoreTable=scoreTable,
-            priceTable=priceTable,
-            company=company,
-            myStockDF=myStockDF,
-            myDividendRecorDF=myDividendRecorDF
-        )
-    )
-    # print('new sellDecisionTable', sellDecisionTable)
-    # Old
-    # myDividendRecorDF = getMyDividendRecord(myStockDF, company)
-    # sellDecisionTable = createSellDecisionTable(
-    #     priceTable, scoreTable, company, myStockDF, myDividendRecorDF)
-    # print('old', sellDecisionTable)
-    # print('Start to upload to Google Sheet at:', company)
-    # upload2Sheet(sellDecisionTable, 'SellDecision', company, idNum)
-
-
-# def scanFolderTree(folder):
-#     i = 7
-#     for entry in os.scandir(folder):
-#         if entry.is_dir(follow_symlinks=False):
-#             mainProcess(entry, i)
-#             i = i+1
-
-# def main(path):
-#     path = os.path.expanduser("~/FinancialData")
-#     scanFolderTree(path)
 
 def getLocalFileDict():
-    filePath = os.path.expanduser("~/FinancialData")
-    return {file.name: dict(fileIterator=os.scandir(file.path)) for file in os.scandir(
-        filePath) if not file.name.startswith('.')}
+    companysPath = os.path.expanduser("~/FinancialData")
+    return {
+        companyFolder.name: dict(
+            reportList=[ele for ele in os.scandir(companyFolder.path)],
+            isReportExist=len(
+                [ele for ele in os.scandir(companyFolder.path)]) > 0
+        ) for companyFolder in os.scandir(companysPath) if not companyFolder.name.startswith('.')
+    }
 
 
-def main(companyList=['V']):
+def getCompanyInfoList():
+    invoker = CommandInvoker()
+    invoker.setCommand(FetchCompanyAndIndustryInfoCommand())
+    return invoker.getDataFromAPI()
+
+
+def main():
     i = 7
     localFileDict = getLocalFileDict()
-    for company in companyList:
+    for company in getCompanyInfoList():
         mainProcess(company, localFileDict, i)
         i = i+1
 

@@ -6,10 +6,10 @@ from .Super import Super
 
 class Profit(Super):
     def __init__(self, **kwargs):
-        thisYear = kwargs.get('combinedDF').columns[0]
+        thisYear = kwargs.get('reportsDF').columns[0]
         Super.__init__(self, thisYear)
         self.colName = config.ProfitName
-        self.combinedDF = kwargs.get('combinedDF')
+        self.reportsDF = kwargs.get('reportsDF')
         self.priceDF = kwargs.get('priceDF')
         self.company = kwargs.get('company')
 

@@ -5,18 +5,30 @@ class ReadLocalFile:
     def __init__(self, **kwargs):
         self._company = kwargs.get('company')
         self._localFileDict = kwargs.get('localFileDict')
-        self._fileIterator = self._localFileDict.get(
-            self._company).get('fileIterator')
-        self._fileList = self.iterator2List(self._fileIterator)
-        self.setData()
+        self._dict = None
+        self.init()
 
-    def iterator2List(self, fileIterator):
-        return [ele for ele in fileIterator]
+    def init(self):
+        if(self.isFileExist()):
+            self.setReportList()
+            self.setData()
 
-    def isInputExist(self):
-        if (len(self._fileList) == 0):
-            return False
-        return True
+    def setReportList(self):
+        self._fileList = self.getReportList()
+
+    def getReportList(self):
+        return self._localFileDict.get(self._company).get('reportList')
+
+    def isReportExist(self):
+        if (self.isLocalFolderExist()):
+            return self._localFileDict.get(self._company).get('isReportExist')
+        return False
+
+    def isLocalFolderExist(self):
+        return self._company in self._localFileDict
+
+    def isFileExist(self):
+        return self.isReportExist()
 
     def concatTable(self, dict):
         balanceDF = dict["balance"]
