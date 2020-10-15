@@ -6,3 +6,4 @@ pip*
 pyvenv.cfg
 *.json
 *.csv
+.DS_Store
