@@ -531,6 +531,8 @@ def createScoreAndCountScore(**kwargs):
 
 def ScoreTable(**kwargs):
     resultDict = createScoreAndCountScore(**kwargs)
+
     summarizedScoreList = dict(summarizedScoreList=resultDict['CountScore'])
     summarizedScoreDF = createSummarizedScore(**kwargs, **summarizedScoreList)
+
     return pd.concat([*resultDict['Score'], *resultDict['CountScore'], summarizedScoreDF], axis=1)

@@ -17,7 +17,7 @@ class Profit(Super):
         return self.divide(self.getOperatingIncome(), self.getRevenue())
 
     def getROS(self):
-        return self.divide(self.getNetIncome(), self.getRevenue())
+        return self.divide(self.getOperatingIncome(), self.getRevenue())
 
     def getROA(self):
         return self.getNetIncomeMargin()*self.getAssetTurnoverRatio()
