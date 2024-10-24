@@ -9,12 +9,20 @@
 A SEC financial report is input and a well-organized table is output to Google Sheet.
 
 ## Features
-- Use Python to build a SEC financial report data pipeline. 
-- Input is a raw financial report, while output is custom report on Google Excel.
+- Two pipeline leveraging Python to build a SEC financial report.
+- Company Screener
+  - Input is a raw financial report, while output is custom report on Google Excel.
+- SEC Financial Report Scraper
+  - Input is a cik, date of that stock, while output is custom report on Google Excel.
 
 ## Start Project
 
 ```bash
+# Run pipeline 1
+cd companyScreener
+python3 main.py
+
+# Run pipeline 2
 cd secFinancialReportScrper
 python3 main.py
 ```
@@ -26,7 +34,4 @@ python3 main.py
 - Google Sheet API
 
 The contents in the following folders will be completed after this project's priority to the top again.
-
-## TODO
-- Refactor companyScreener
 
