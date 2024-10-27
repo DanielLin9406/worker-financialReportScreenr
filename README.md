@@ -11,9 +11,10 @@ A SEC financial report is input and a well-organized table is output to Google S
 ## Features
 - Two pipeline leveraging Python to build a SEC financial report.
 - Company Screener
-  - Input is a raw financial report, while output is custom report on Google Excel.
+  - Input are three financial report files exported from morningstar and location is under ~/FinancialData/{ticker}, while output is custom report on Google Excel.
+  ![Input file path](image.png)
 - SEC Financial Report Scraper
-  - Input is a cik, date of that stock, while output is custom report on Google Excel.
+  - Input is a ticker symbol, date of that stock, while output is custom report on Google Excel.
 
 ## Start Project
 
